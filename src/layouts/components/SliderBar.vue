@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import SliderBarItem from './SliderBarItem.vue'
+import { computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import SliderBarItem from "./SliderBarItem.vue";
 
-const route = useRoute()
+const route = useRoute();
 const defaultActive = computed(() => {
-  return route.meta.activePath ? route.meta.activePath : route.path
-})
+  return route.meta.activePath ? route.meta.activePath : route.path;
+});
 
-const router = useRouter()
+const router = useRouter();
 const routes = computed(() => {
-  return router.options.routes
-})
+  return router.options.routes;
+});
 </script>
 
 <template>
@@ -35,7 +35,7 @@ const routes = computed(() => {
 .slider-bar {
   .logo {
     height: 60px;
-    background: #fff url('@/assets/hmzs-logo.png') no-repeat center / contain;
+    background: #fff url("@/assets/hmzs-logo.png") no-repeat center / contain;
   }
   :deep(.el-menu-item.is-active) {
     background-color: var(--el-menu-hover-bg-color);

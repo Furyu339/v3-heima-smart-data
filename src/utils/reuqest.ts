@@ -1,26 +1,26 @@
-import axios from 'axios'
+import axios from "axios";
 
 const service = axios.create({
-  baseURL: 'https://api-hmzs.itheima.net/api',
+  baseURL: "https://api-hmzs.itheima.net/api",
   timeout: 5000,
-})
+});
 
 service.interceptors.request.use(
-  config => {
-    return config
+  (config) => {
+    return config;
   },
-  error => {
-    return Promise.reject(error)
+  (error) => {
+    return Promise.reject(error);
   },
-)
+);
 
 service.interceptors.response.use(
-  response => {
-    return response.data
+  (response) => {
+    return response.data;
   },
-  error => {
-    return Promise.reject(error)
+  (error) => {
+    return Promise.reject(error);
   },
-)
+);
 
-export default service
+export default service;

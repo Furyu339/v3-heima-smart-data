@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, type PropType } from 'vue'
-import type { RouteRecordRaw } from 'vue-router'
-import path from 'path-browserify'
+import { ref, type PropType } from "vue";
+import type { RouteRecordRaw } from "vue-router";
+import path from "path-browserify";
 
 const props = defineProps({
   item: {
@@ -9,54 +9,54 @@ const props = defineProps({
   },
   basePath: {
     type: String,
-    default: '',
+    default: "",
   },
-})
+});
 
-const onlyOneChild = ref<RouteRecordRaw>()
+const onlyOneChild = ref<RouteRecordRaw>();
 
 function hasOneShowingChild(
   children: RouteRecordRaw[] = [],
   parent: RouteRecordRaw,
 ) {
-  const showingChildren = children.filter(item => {
+  const showingChildren = children.filter((item) => {
     if (item.meta?.hidden) {
-      return false
+      return false;
     } else {
-      onlyOneChild.value = item
-      return true
+      onlyOneChild.value = item;
+      return true;
     }
-  })
+  });
 
   if (showingChildren.length === 1) {
-    return true
+    return true;
   }
 
   if (showingChildren.length === 0) {
-    const newChild = { ...parent, path: '' }
+    const newChild = { ...parent, path: "" };
     if (newChild.meta) {
-      newChild.meta.noShowingChildren = true
+      newChild.meta.noShowingChildren = true;
     }
-    onlyOneChild.value = newChild
-    return true
+    onlyOneChild.value = newChild;
+    return true;
   }
-  return false
+  return false;
 }
 
 function resolvePath(routePath: string) {
-  const httpReg = /^http(s?):\/\//
+  const httpReg = /^http(s?):\/\//;
   if (httpReg.test(routePath) || httpReg.test(props.basePath)) {
-    return routePath || props.basePath
+    return routePath || props.basePath;
   } else {
     // 使用path.posix.resolve替代path.resolve 避免windows环境下使用electron出现盘符问题
-    return path.posix.resolve(props.basePath, routePath)
+    return path.posix.resolve(props.basePath, routePath);
   }
 }
 
-import.meta.glob('@/assets/menu/*.{png,jpg}', { eager: true })
+import.meta.glob("@/assets/menu/*.{png,jpg}", { eager: true });
 const getIcon = (name: string) => {
-  return new URL(`/src/assets/menu/${name}.png`, import.meta.url).href
-}
+  return new URL(`/src/assets/menu/${name}.png`, import.meta.url).href;
+};
 </script>
 
 <template>

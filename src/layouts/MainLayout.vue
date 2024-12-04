@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import NavBar from './components/NavBar.vue'
-import SliderBar from './components/SliderBar.vue'
+import NavBar from "./components/NavBar.vue";
+import SliderBar from "./components/SliderBar.vue";
 </script>
 
 <template>
