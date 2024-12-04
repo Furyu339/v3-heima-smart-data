@@ -2,9 +2,9 @@ import axios from "axios";
 
 // 创建 Axios 实例
 const service = axios.create({
-  baseURL: "https://api-hmzs.itheima.net/api", // 基础请求地址
-  timeout: 5000, // 请求超时时间（单位：毫秒）
-});
+  baseURL: 'https://api-hmzs.itheima.net/tj',
+  timeout: 5000 // request timeout
+})
 
 // 请求拦截器
 service.interceptors.request.use(

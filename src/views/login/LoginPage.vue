@@ -13,6 +13,16 @@ const rules = {
   ]
 }
 
+const form = ref<FormInstance | undefined>()
+const doLogin = ()=> {
+  form.value!.validate((valid) => {
+    if (valid) {
+      // TODO
+      console.log('登录')
+    }
+  })
+}
+
 </script>
 
 <template>
@@ -34,7 +44,7 @@ const rules = {
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" class="login_btn">登录</el-button>
+          <el-button type="primary" class="login_btn" @click="doLogin()">登录</el-button>
         </el-form-item>
       </el-form>
     </div>
