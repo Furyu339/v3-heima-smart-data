@@ -1,4 +1,10 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const formData = ref({
+  username: "",
+  password: "",
+  remember: "",
+});
+</script>
 
 <template>
   <div class="login_body">
@@ -7,15 +13,15 @@
       <div class="title">智慧园区-登录</div>
       <el-form ref="form">
         <el-form-item label="账号" prop="username">
-          <el-input />
+          <el-input v-model="formData.username" />
         </el-form-item>
 
         <el-form-item label="密码" prop="password">
-          <el-input />
+          <el-input v-model="formData.password" type="password" />
         </el-form-item>
 
         <el-form-item prop="remember">
-          <el-checkbox>记住我</el-checkbox>
+          <el-checkbox v-model="formData.remember">记住我</el-checkbox>
         </el-form-item>
 
         <el-form-item>
