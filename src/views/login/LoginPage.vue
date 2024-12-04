@@ -4,6 +4,15 @@ const formData = ref({
   password: "",
   remember: "",
 });
+const rules = {
+  username: [
+    { required: true, message: '请输入账号', trigger: 'blur' }
+  ],
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' }
+  ]
+}
+
 </script>
 
 <template>
@@ -11,7 +20,7 @@ const formData = ref({
     <div class="bg" />
     <div class="box">
       <div class="title">智慧园区-登录</div>
-      <el-form ref="form">
+      <el-form ref="form" :model="formData" :rules="rules">
         <el-form-item label="账号" prop="username">
           <el-input v-model="formData.username" />
         </el-form-item>
