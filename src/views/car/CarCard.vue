@@ -25,7 +25,11 @@
         <el-table-column align="center" label="联系方式" prop="phoneNumber" />
         <el-table-column align="center" label="车牌号码" prop="carNumber" />
         <el-table-column align="center" label="车辆品牌" prop="carBrand" />
-        <el-table-column align="center" label="剩余有效天数" prop="totalEffectiveDate" />
+        <el-table-column
+          align="center"
+          label="剩余有效天数"
+          prop="totalEffectiveDate"
+        />
         <el-table-column align="center" label="操作" fixed="right" width="300">
           <template #default="scope">
             <el-button size="small" type="text">续费</el-button>
