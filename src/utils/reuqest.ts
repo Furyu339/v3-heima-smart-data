@@ -1,5 +1,6 @@
 import axios, { type Method } from "axios";
 import { getLocalToken } from "./auth";
+import { ElMessage } from "element-plus";
 
 // 创建 Axios 实例
 const service = axios.create({
@@ -19,6 +20,7 @@ service.interceptors.request.use(
   },
   (error) => {
     // 请求发送失败时的处理逻辑
+    ElMessage.error(error.response.data.msg);
     return Promise.reject(error); // 返回错误信息
   }
 );
@@ -33,6 +35,7 @@ service.interceptors.response.use(
   (error) => {
     // 响应失败时的处理逻辑
     // 例如：处理错误提示或重定向
+    ElMessage.error(error.response.data.msg);
     return Promise.reject(error); // 返回错误信息
   }
 );
