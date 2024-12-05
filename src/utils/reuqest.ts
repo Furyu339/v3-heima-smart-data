@@ -2,9 +2,9 @@ import axios, { type Method } from "axios";
 
 // 创建 Axios 实例
 const service = axios.create({
-  baseURL: 'https://api-hmzs.itheima.net/tj',
-  timeout: 5000 // request timeout
-})
+  baseURL: "https://api-hmzs.itheima.net/tj",
+  timeout: 5000, // request timeout
+});
 
 // 请求拦截器
 service.interceptors.request.use(
@@ -34,19 +34,21 @@ service.interceptors.response.use(
 );
 
 type Data<T> = {
-  code: number
-  message: string
-  data: T
-}
+  code: number;
+  message: string;
+  data: T;
+};
 // 4. 请求工具函数
-const request = <T>(url: string, method: Method = 'get', submitData?: object) => {
+const request = <T>(
+  url: string,
+  method: Method = "get",
+  submitData?: object,
+) => {
   return service.request<T, Data<T>>({
     url,
     method,
-    [method.toLowerCase() === 'get' ? 'params' : 'data']: submitData
-  })
-}
+    [method.toLowerCase() === "get" ? "params" : "data"]: submitData,
+  });
+};
 
-export { request }
-
-
+export { request };

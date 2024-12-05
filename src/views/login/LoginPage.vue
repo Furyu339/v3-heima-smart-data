@@ -1,28 +1,27 @@
 <script setup lang="ts">
+import { loginAPI } from "@/apis/user";
+import type { FormInstance } from "element-plus";
+
 const formData = ref({
-  username: "",
-  password: "",
-  remember: "",
+  username: "demo",
+  password: "Hmzs%001",
+  remember: true,
 });
 const rules = {
-  username: [
-    { required: true, message: '请输入账号', trigger: 'blur' }
-  ],
-  password: [
-    { required: true, message: '请输入密码', trigger: 'blur' }
-  ]
-}
+  username: [{ required: true, message: "请输入账号", trigger: "blur" }],
+  password: [{ required: true, message: "请输入密码", trigger: "blur" }],
+};
 
-const form = ref<FormInstance | undefined>()
-const doLogin = ()=> {
-  form.value!.validate((valid) => {
+const form = ref<FormInstance | undefined>();
+const doLogin = () => {
+  form.value!.validate(async (valid) => {
     if (valid) {
-      // TODO
-      console.log('登录')
+      const { username, password } = formData.value;
+      const res = await loginAPI({ username, password });
+      console.log("登录", res);
     }
-  })
-}
-
+  });
+};
 </script>
 
 <template>
@@ -44,7 +43,9 @@ const doLogin = ()=> {
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" class="login_btn" @click="doLogin()">登录</el-button>
+          <el-button type="primary" class="login_btn" @click="doLogin()"
+            >登录</el-button
+          >
         </el-form-item>
       </el-form>
     </div>
