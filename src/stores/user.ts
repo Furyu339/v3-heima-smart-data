@@ -1,4 +1,4 @@
-import { getLocalToken, setLocalToken } from "@/utils/auth";
+import { getLocalToken, removeLocalToken, setLocalToken } from "@/utils/auth";
 import { defineStore } from "pinia";
 
 export const useUserStore = defineStore("hm-user", () => {
@@ -8,8 +8,14 @@ export const useUserStore = defineStore("hm-user", () => {
     token.value = t;
     setLocalToken(t);
   };
+
+  const clearUserInfo = () => {
+    token.value = "";
+    removeLocalToken();
+  };
   return {
     token,
     setToken,
+    clearUserInfo,
   };
 });
