@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { loginAPI } from "@/apis/user";
+import { FORMDATA_KEY } from "@/constants";
 import type { FormInstance } from "element-plus";
 
 const formData = ref({
-  username: "demo",
-  password: "Hmzs%001",
-  remember: true,
+  username: "",
+  password: "",
+  remember: false,
 });
 const rules = {
   username: [{ required: true, message: "请输入账号", trigger: "blur" }],
@@ -13,15 +14,31 @@ const rules = {
 };
 
 const form = ref<FormInstance | undefined>();
+
 const doLogin = () => {
   form.value!.validate(async (valid) => {
     if (valid) {
       const { username, password } = formData.value;
       const res = await loginAPI({ username, password });
+       // 确保登录流程ok后，并且账号密码正确的
+       if (formData.value.remember) {
+        localStorage.setItem(FORMDATA_KEY, JSON.stringify(formData.value))
+      } else {
+        localStorage.removeItem(FORMDATA_KEY)
+      }
       console.log("登录", res);
     }
   });
 };
+
+const testingAutoPassword = () => {
+   formData.value = {
+    username: "demo",
+    password: "Hmzs%001",
+    remember: true,
+  };
+};
+
 </script>
 
 <template>
@@ -48,8 +65,10 @@ const doLogin = () => {
           >
         </el-form-item>
       </el-form>
+      <el-button @click="testingAutoPassword">测试自动填充</el-button>
     </div>
   </div>
+ 
 </template>
 
 <style lang="scss" scoped>

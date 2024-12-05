@@ -1,4 +1,5 @@
 import axios, { type Method } from "axios";
+import { getLocalToken } from "./auth";
 
 // 创建 Axios 实例
 const service = axios.create({
@@ -9,14 +10,17 @@ const service = axios.create({
 // 请求拦截器
 service.interceptors.request.use(
   (config) => {
-    // 请求发送前的处理逻辑
-    // 例如：添加认证 token 或修改请求头
+    const token = getLocalToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
     return config; // 返回修改后的配置
   },
   (error) => {
     // 请求发送失败时的处理逻辑
     return Promise.reject(error); // 返回错误信息
-  },
+  }
 );
 
 // 响应拦截器
@@ -30,7 +34,7 @@ service.interceptors.response.use(
     // 响应失败时的处理逻辑
     // 例如：处理错误提示或重定向
     return Promise.reject(error); // 返回错误信息
-  },
+  }
 );
 
 type Data<T> = {
@@ -42,7 +46,7 @@ type Data<T> = {
 const request = <T>(
   url: string,
   method: Method = "get",
-  submitData?: object,
+  submitData?: object
 ) => {
   return service.request<T, Data<T>>({
     url,
