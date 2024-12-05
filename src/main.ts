@@ -8,9 +8,12 @@ import "./styles/index.scss";
 import { createPinia } from "pinia";
 import router from "./router";
 import "./permission";
+import { zhCn } from "element-plus/es/locales.mjs";
 const app = createApp(App);
 
-app.use(ElementPlus);
+app.use(ElementPlus, {
+  locale: zhCn,
+});
 app.use(createPinia());
 app.use(router);
 
