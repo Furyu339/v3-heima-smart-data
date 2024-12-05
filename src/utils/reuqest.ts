@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { type Method } from "axios";
 
 // 创建 Axios 实例
 const service = axios.create({
@@ -33,4 +33,20 @@ service.interceptors.response.use(
   },
 );
 
-export default service; // 导出 Axios 实例供其他模块使用
+type Data<T> = {
+  code: number
+  message: string
+  data: T
+}
+// 4. 请求工具函数
+const request = <T>(url: string, method: Method = 'get', submitData?: object) => {
+  return service.request<T, Data<T>>({
+    url,
+    method,
+    [method.toLowerCase() === 'get' ? 'params' : 'data']: submitData
+  })
+}
+
+export { request }
+
+
