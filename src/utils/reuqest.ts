@@ -1,6 +1,8 @@
 import axios, { type Method } from "axios";
 import { getLocalToken } from "./auth";
 import { ElMessage } from "element-plus";
+import { useRouter } from "vue-router";
+import { useUserStore } from "@/stores/user";
 
 // 创建 Axios 实例
 const service = axios.create({
@@ -36,6 +38,12 @@ service.interceptors.response.use(
     // 响应失败时的处理逻辑
     // 例如：处理错误提示或重定向
     ElMessage.error(error.response.data.msg);
+    if(error.response.status === 401){
+      const router = useRouter()
+      router.push('/login')
+      const store = useUserStore()
+      store.clearUserInfo()
+    }
     return Promise.reject(error); // 返回错误信息
   }
 );
