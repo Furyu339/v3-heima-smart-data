@@ -1,33 +1,28 @@
 <script setup lang="ts">
-import { useUserStore } from '@/stores/user';
-import { ElMessageBox } from 'element-plus';
-import { useRouter } from 'vue-router';
-
+import { useUserStore } from "@/stores/user";
+import { ElMessageBox } from "element-plus";
+import { useRouter } from "vue-router";
 
 const store = useUserStore();
 const router = useRouter();
 
-
-const handleCommand = (command:string) =>{
-  if (command === 'logout') {
-    ElMessageBox.confirm('确定要退出登录吗？', '确认退出', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
+const handleCommand = (command: string) => {
+  if (command === "logout") {
+    ElMessageBox.confirm("确定要退出登录吗？", "确认退出", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
     })
       .then(() => {
         // 用户点击确定，执行退出登录逻辑
-        store.clearUserInfo()
-        router.replace('/login')
+        store.clearUserInfo();
+        router.replace("/login");
       })
       .catch(() => {
         // 用户点击取消
-        console.log('用户取消退出登录');
+        console.log("用户取消退出登录");
       });
   }
-}
-
-
-
+};
 </script>
 
 <template>

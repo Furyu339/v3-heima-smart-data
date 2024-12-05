@@ -1,7 +1,6 @@
 import axios, { type Method } from "axios";
 import { getLocalToken } from "./auth";
 import { ElMessage } from "element-plus";
-import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 
 // 创建 Axios 实例
@@ -24,7 +23,7 @@ service.interceptors.request.use(
     // 请求发送失败时的处理逻辑
     ElMessage.error(error.response.data.msg);
     return Promise.reject(error); // 返回错误信息
-  }
+  },
 );
 
 // 响应拦截器
@@ -38,14 +37,12 @@ service.interceptors.response.use(
     // 响应失败时的处理逻辑
     // 例如：处理错误提示或重定向
     ElMessage.error(error.response.data.msg);
-    if(error.response.status === 401){
-      const router = useRouter()
-      router.push('/login')
-      const store = useUserStore()
-      store.clearUserInfo()
+    if (error.response.status === 401) {
+      const store = useUserStore();
+      store.clearUserInfo();
     }
     return Promise.reject(error); // 返回错误信息
-  }
+  },
 );
 
 type Data<T> = {
@@ -57,7 +54,7 @@ type Data<T> = {
 const request = <T>(
   url: string,
   method: Method = "get",
-  submitData?: object
+  submitData?: object,
 ) => {
   return service.request<T, Data<T>>({
     url,

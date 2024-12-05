@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { loginAPI } from "@/apis/user";
 import { FORMDATA_KEY } from "@/constants";
-import type { FormInstance } from "element-plus";
+import { useUserStore } from "@/stores/user";
+import { ElMessage, type FormInstance } from "element-plus";
+import { useRouter } from "vue-router";
 
 const formData = ref({
   username: "",
@@ -12,7 +14,8 @@ const rules = {
   username: [{ required: true, message: "请输入账号", trigger: "blur" }],
   password: [{ required: true, message: "请输入密码", trigger: "blur" }],
 };
-
+const router = useRouter();
+const store = useUserStore();
 const form = ref<FormInstance | undefined>();
 
 const doLogin = () => {
@@ -20,25 +23,36 @@ const doLogin = () => {
     if (valid) {
       const { username, password } = formData.value;
       const res = await loginAPI({ username, password });
-       // 确保登录流程ok后，并且账号密码正确的
-       if (formData.value.remember) {
-        localStorage.setItem(FORMDATA_KEY, JSON.stringify(formData.value))
+      // 确保登录流程ok后，并且账号密码正确的
+      if (formData.value.remember) {
+        localStorage.setItem(FORMDATA_KEY, JSON.stringify(formData.value));
       } else {
-        localStorage.removeItem(FORMDATA_KEY)
+        localStorage.removeItem(FORMDATA_KEY);
       }
-      console.log("登录", res);
+      if (res.code === 10000) {
+        store.setToken(res.data.token);
+        router.push("/workbench");
+      }
+      // console.log("登录", res);
     }
   });
 };
+onMounted(() => {
+  const formDataStr = localStorage.getItem(FORMDATA_KEY);
+  if (formDataStr) {
+    const savedFormData = JSON.parse(formDataStr);
+    formData.value = { ...savedFormData, remember: false };
+  }
+});
 
+// 开发环境下快速自动填充账号密码
 const testingAutoPassword = () => {
-   formData.value = {
+  formData.value = {
     username: "demo",
     password: "Hmzs%001",
     remember: true,
   };
 };
-
 </script>
 
 <template>
@@ -68,7 +82,6 @@ const testingAutoPassword = () => {
       <el-button @click="testingAutoPassword">测试自动填充</el-button>
     </div>
   </div>
- 
 </template>
 
 <style lang="scss" scoped>
