@@ -81,9 +81,6 @@ import { validateCarNumber } from "@/utils/validate";
 import { useRouter } from "vue-router";
 import { createCardAPI } from "@/apis/card";
 
-
-
-
 const carInfoFormRef = ref();
 const feeFormRef = ref();
 const router = useRouter();
@@ -184,19 +181,19 @@ const payMethodList = [
 const confirmAdd = () => {
   carInfoFormRef.value.validate((valid: any) => {
     if (valid) {
-      feeFormRef.value.validate( async  (valid: any) => {
+      feeFormRef.value.validate(async (valid: any) => {
         if (valid) {
-            const payload = {
+          const payload = {
             paymentAmount: feeForm.value.paymentAmount,
             paymentMethod: feeForm.value.paymentMethod,
             ...carInfoForm.value,
             // 单独处理时间
             cardStartDate: feeForm.value.payTime[0],
-            cardEndDate: feeForm.value.payTime[1]
-          }
-          console.log(payload)
-          await createCardAPI(payload)
-          router.back()
+            cardEndDate: feeForm.value.payTime[1],
+          };
+          console.log(payload);
+          await createCardAPI(payload);
+          router.back();
         }
       });
     }
@@ -206,10 +203,9 @@ const confirmAdd = () => {
 // 重置表单
 const resetForm = () => {
   // el-form 会用默认 v-model 的初始值作为重置的数据
-  feeFormRef.value.resetFields()
-  carInfoFormRef.value.resetFields()
-}
-
+  feeFormRef.value.resetFields();
+  carInfoFormRef.value.resetFields();
+};
 </script>
 
 <style scoped lang="scss">

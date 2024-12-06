@@ -15,5 +15,5 @@ export const getCardListAPI = (params: CardListParams) => {
  * @returns
  */
 export const createCardAPI = (data: CardParams) => {
-  return request('/parking/card', 'POST', data)
-}
+  return request("/parking/card", "POST", data);
+};
