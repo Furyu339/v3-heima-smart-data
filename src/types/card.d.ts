@@ -74,6 +74,8 @@ export interface CardParams {
   carNumber: string;
   /** 车辆品牌 */
   carBrand: string;
+  /** 车辆信息id */
+  carInfoId?: number;
 }
 
 export interface CardDetail {
@@ -122,4 +124,14 @@ export interface CardDetail {
    */
   rechargeId: number;
   [property: string]: any;
+}
+
+/**
+ * 缴费信息表单接口
+ */
+export interface FeeForm {
+  rechargeId?: number; // 缴费ID（可选）
+  payTime: [string, string]; // 支付时间范围
+  paymentAmount: number; // 支付金额
+  paymentMethod: string; // 支付方式
 }

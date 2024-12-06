@@ -1,5 +1,5 @@
 <template>
-  <div class="add-card">
+  <div class="add-card" v-loading="loading">
     <header class="add-header">
       <el-page-header content="增加月卡" @back="$router.back()" />
     </header>
@@ -75,16 +75,65 @@
 </template>
 
 <script lang="ts" setup>
+import { ref, computed, onMounted } from "vue";
 import type { FormRules } from "element-plus";
-import type { CardParams } from "@/types/card";
+import type { CardParams, FeeForm } from "@/types/card";
 import { validateCarNumber } from "@/utils/validate";
 import { useRoute, useRouter } from "vue-router";
-import { createCardAPI } from "@/apis/card";
+import { createCardAPI, getCardDetailAPI } from "@/apis/card";
 
+const loading = ref(false);
 const carInfoFormRef = ref();
 const feeFormRef = ref();
 const router = useRouter();
 const route = useRoute();
+const id = computed(() => {
+  return route.query.id as string;
+});
+
+const getDetail = async () => {
+  loading.value = true;
+  try {
+    const res = await getCardDetailAPI(id.value);
+    // 回填车辆信息表单
+    const { carInfoId, personName, phoneNumber, carNumber, carBrand } =
+      res.data;
+    carInfoForm.value = {
+      personName,
+      phoneNumber,
+      carNumber,
+      carBrand,
+      carInfoId,
+    };
+
+    // 回填缴费信息表单
+    const {
+      rechargeId,
+      cardStartDate,
+      cardEndDate,
+      paymentAmount,
+      paymentMethod,
+    } = res.data;
+    feeForm.value = {
+      rechargeId,
+      paymentAmount,
+      paymentMethod,
+      payTime: [cardStartDate, cardEndDate],
+    };
+  } catch (error) {
+    // 处理错误，例如显示通知
+    console.error(error);
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(() => {
+  if (id.value) {
+    getDetail();
+  }
+});
+
 // 车辆信息表单
 const carInfoForm = ref<CardParams>({
   personName: "", // 车主姓名
@@ -131,10 +180,10 @@ const carInfoRules: FormRules<CardParams> = {
 };
 
 // 缴费信息表单
-const feeForm = ref({
-  payTime: [], // 支付时间
-  paymentAmount: undefined, // 支付金额
-  paymentMethod: undefined, // 支付方式
+const feeForm = ref<FeeForm>({
+  payTime: ["", ""], // 支付时间
+  paymentAmount: 0, // 支付金额
+  paymentMethod: "", // 支付方式
 });
 
 // 缴费规则
@@ -192,8 +241,13 @@ const confirmAdd = () => {
             cardEndDate: feeForm.value.payTime[1],
           };
           console.log(payload);
-          await createCardAPI(payload);
-          router.back();
+          try {
+            await createCardAPI(payload);
+            router.back();
+          } catch (error) {
+            // 处理错误，例如显示通知
+            console.error(error);
+          }
         }
       });
     }
