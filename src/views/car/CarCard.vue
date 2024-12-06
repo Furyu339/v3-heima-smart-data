@@ -31,7 +31,9 @@
     </div>
     <!-- 新增删除操作区域 -->
     <div class="create-container">
-      <el-button type="primary">添加月卡</el-button>
+      <el-button type="primary" @click="$router.push('/cardAdd')"
+        >添加月卡</el-button
+      >
       <el-button>批量删除</el-button>
     </div>
     <!-- 表格区域 -->
@@ -87,7 +89,7 @@ const params = ref<CardListParams>({
   pageSize: 10,
   carNumber: undefined, // 车辆号码
   personName: undefined, // 车主姓名
-  cardStatus: undefined, // 车辆状态 
+  cardStatus: undefined, // 车辆状态
 });
 
 // 定义月卡列表和总数
@@ -114,7 +116,7 @@ const cardStatusList = [
 const getCardList = async () => {
   loading.value = true;
   const tempParams = { ...params.value };
-  console.log('tempParams',tempParams);
+  console.log("tempParams", tempParams);
   if (Number(tempParams.cardStatus) === -1) {
     delete tempParams.cardStatus;
   }
@@ -144,7 +146,7 @@ onMounted(() => {
 
 // 查询按钮的处理函数
 const doSearch = () => {
-  // 调用接口之前把页数参数重置为 1 
+  // 调用接口之前把页数参数重置为 1
   // （防止页码在其他页时，搜索时数据不够，导致还在原来页码停留）
   params.value.page = 1;
   getCardList();

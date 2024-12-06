@@ -62,3 +62,16 @@ export interface Card {
    */
   totalEffectiveDate: number;
 }
+/**
+ * 月卡参数接口
+ */
+export interface CardParams {
+  /** 车主姓名 */
+  personName: string;
+  /** 联系方式 */
+  phoneNumber: string;
+  /** 车牌号码 */
+  carNumber: string;
+  /** 车辆品牌 */
+  carBrand: string;
+}

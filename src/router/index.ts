@@ -65,6 +65,12 @@ export const routes: RouteRecordRaw[] = [
         component: () => import("@/views/car/CarCard.vue"),
         meta: { title: "月卡管理", permission: "parking:card" },
       },
+      // 新增月卡管理页
+      {
+        path: "/cardAdd",
+        component: () => import("@/views/car/AddCard.vue"),
+        meta: { hidden: true },
+      },
       {
         path: "pay",
         component: () => import("@/views/car/CarPay.vue"),
