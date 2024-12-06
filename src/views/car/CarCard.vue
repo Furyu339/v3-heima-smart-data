@@ -50,10 +50,10 @@
           prop="totalEffectiveDate"
         />
         <el-table-column align="center" label="操作" fixed="right" width="300">
-          <template #default="scope">
+          <template #default="{row:{id}}">
             <el-button size="small" type="text">续费</el-button>
             <el-button size="small" type="text">查看</el-button>
-            <el-button size="small" type="text">编辑</el-button>
+            <el-button size="small" type="text" @click="editCard(id)">编辑</el-button>
             <el-button size="small" type="text">删除</el-button>
           </template>
         </el-table-column>
@@ -80,10 +80,19 @@
 import { getCardListAPI } from "@/apis/card";
 import type { Card, CardListParams } from "@/types/card";
 import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 
 // 定义加载状态
 const loading = ref(false);
-
+const router = useRouter()
+const editCard = (id: string) => {
+  router.push({
+    path: '/cardAdd',
+    query: {
+      id
+    }
+  })
+}
 const params = ref<CardListParams>({
   page: 1,
   pageSize: 10,
