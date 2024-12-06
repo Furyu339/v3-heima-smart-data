@@ -8,6 +8,7 @@
         <div class="title">车辆信息</div>
         <div class="form">
           <el-form
+            ref="carInfoFormRef"
             :model="carInfoForm"
             :rules="carInfoRules"
             label-width="100px"
@@ -30,22 +31,34 @@
       <div class="form-container">
         <div class="title">最新一次月卡缴费信息</div>
         <div class="form">
-          <el-form label-width="100px">
-            <el-form-item label="有效日期">
+          <el-form
+            label-width="100px"
+            :model="feeForm"
+            :rules="feeFormRules"
+            ref="feeFormRef"
+          >
+            <el-form-item label="有效日期" prop="payTime">
               <el-date-picker
-                value-format="yyyy-MM-dd"
+                v-model="feeForm.payTime"
+                format="YYYY-MM-DD"
+                value-format="YYYY-MM-DD"
                 type="daterange"
                 range-separator="至"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
               />
             </el-form-item>
-            <el-form-item label="支付金额">
-              <el-input />
+            <el-form-item label="支付金额" prop="paymentAmount">
+              <el-input v-model="feeForm.paymentAmount" />
             </el-form-item>
-            <el-form-item label="支付方式">
-              <el-select>
-                <!-- <el-option v-for="item in [{}]" :key="item.id" :value="item.id" :label="item.name" /> -->
+            <el-form-item label="支付方式" prop="paymentMethod">
+              <el-select v-model="feeForm.paymentMethod" clearable>
+                <el-option
+                  v-for="item in payMethodList"
+                  :key="item.id"
+                  :value="item.id"
+                  :label="item.name"
+                />
               </el-select>
             </el-form-item>
           </el-form>
@@ -54,8 +67,8 @@
     </main>
     <footer class="add-footer">
       <div class="btn-container">
-        <el-button>重置</el-button>
-        <el-button type="primary">确定</el-button>
+        <el-button @click="resetForm">重置</el-button>
+        <el-button type="primary" @click="confirmAdd">确定</el-button>
       </div>
     </footer>
   </div>
@@ -65,7 +78,16 @@
 import type { FormRules } from "element-plus";
 import type { CardParams } from "@/types/card";
 import { validateCarNumber } from "@/utils/validate";
-// 1. 添加月卡
+import { useRouter } from "vue-router";
+import { createCardAPI } from "@/apis/card";
+
+
+
+
+const carInfoFormRef = ref();
+const feeFormRef = ref();
+const router = useRouter();
+
 // 车辆信息表单
 const carInfoForm = ref<CardParams>({
   personName: "", // 车主姓名
@@ -74,7 +96,8 @@ const carInfoForm = ref<CardParams>({
   carBrand: "", // 车辆品牌
 });
 
-const carInfoRules = ref<FormRules<CardParams>>({
+// 车辆信息表单规则
+const carInfoRules: FormRules<CardParams> = {
   personName: [
     {
       required: true,
@@ -108,7 +131,85 @@ const carInfoRules = ref<FormRules<CardParams>>({
       trigger: "blur",
     },
   ],
+};
+
+// 缴费信息表单
+const feeForm = ref({
+  payTime: [], // 支付时间
+  paymentAmount: undefined, // 支付金额
+  paymentMethod: undefined, // 支付方式
 });
+
+// 缴费规则
+const feeFormRules = {
+  payTime: [
+    {
+      required: true,
+      message: "请选择支付时间",
+    },
+  ],
+  paymentAmount: [
+    {
+      required: true,
+      message: "请输入支付金额",
+      trigger: "blur",
+    },
+  ],
+  paymentMethod: [
+    {
+      required: true,
+      message: "请选择支付方式",
+      trigger: "change",
+    },
+  ],
+};
+
+// 支付方式列表
+const payMethodList = [
+  {
+    id: "Alipay",
+    name: "支付宝",
+  },
+  {
+    id: "WeChat",
+    name: "微信",
+  },
+  {
+    id: "Cash",
+    name: "线下",
+  },
+];
+
+// 确定添加按钮
+const confirmAdd = () => {
+  carInfoFormRef.value.validate((valid: any) => {
+    if (valid) {
+      feeFormRef.value.validate( async  (valid: any) => {
+        if (valid) {
+            const payload = {
+            paymentAmount: feeForm.value.paymentAmount,
+            paymentMethod: feeForm.value.paymentMethod,
+            ...carInfoForm.value,
+            // 单独处理时间
+            cardStartDate: feeForm.value.payTime[0],
+            cardEndDate: feeForm.value.payTime[1]
+          }
+          console.log(payload)
+          await createCardAPI(payload)
+          router.back()
+        }
+      });
+    }
+  });
+};
+
+// 重置表单
+const resetForm = () => {
+  // el-form 会用默认 v-model 的初始值作为重置的数据
+  feeFormRef.value.resetFields()
+  carInfoFormRef.value.resetFields()
+}
+
 </script>
 
 <style scoped lang="scss">
