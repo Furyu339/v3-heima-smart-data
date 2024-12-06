@@ -1,4 +1,4 @@
-import type { CardListData, CardListParams, CardParams } from "@/types/card";
+import type { CardDetail, CardListData, CardListParams, CardParams } from "@/types/card";
 import { request } from "@/utils/reuqest";
 
 /**
@@ -17,3 +17,20 @@ export const getCardListAPI = (params: CardListParams) => {
 export const createCardAPI = (data: CardParams) => {
   return request("/parking/card", "POST", data);
 };
+/**
+ * 获取月卡详情
+ * @data
+ * @returns
+ */
+export const  getCardDetailAPI = (id: string) => {
+  return request<CardDetail>(`/parking/card/detail/${id}`, 'GET')
+}
+
+/**
+ * 更新月卡
+ * @param {*} data
+ * @returns
+ */
+export const updateCardAPI = (data: CardParams) => {
+  return request('/parking/card/edit', 'PUT', data)
+}

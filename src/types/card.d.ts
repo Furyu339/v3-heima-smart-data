@@ -75,3 +75,51 @@ export interface CardParams {
   /** 车辆品牌 */
   carBrand: string;
 }
+
+export interface CardDetail {
+  /**
+   * 车辆品牌
+   */
+  carBrand: string;
+  /**
+   * 最近一次月卡结束时间
+   */
+  cardEndDate: string;
+  /**
+   * 最近一次月卡开始时间
+   */
+  cardStartDate: string;
+  /**
+   * 名下月卡有效状态 0有效，1已过期
+   */
+  cardStatus: number;
+  /**
+   * 车辆信息id
+   */
+  carInfoId: number;
+  /**
+   * 车牌号
+   */
+  carNumber: string;
+  /**
+   * 支付金额
+   */
+  paymentAmount: number;
+  /**
+   * 支付方式 支付方式,支付宝:Alipay,微信:WeChat,线下:Cash
+   */
+  paymentMethod: PaymentMethod;
+  /**
+   * 车主姓名
+   */
+  personName: string;
+  /**
+   * 联系方式
+   */
+  phoneNumber: PhoneNumber;
+  /**
+   * 充值记录id
+   */
+  rechargeId: number;
+  [property: string]: any;
+}

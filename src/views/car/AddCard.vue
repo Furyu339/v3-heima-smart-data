@@ -78,13 +78,13 @@
 import type { FormRules } from "element-plus";
 import type { CardParams } from "@/types/card";
 import { validateCarNumber } from "@/utils/validate";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { createCardAPI } from "@/apis/card";
 
 const carInfoFormRef = ref();
 const feeFormRef = ref();
 const router = useRouter();
-
+const route = useRoute();
 // 车辆信息表单
 const carInfoForm = ref<CardParams>({
   personName: "", // 车主姓名
