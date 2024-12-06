@@ -80,7 +80,7 @@ import type { FormRules } from "element-plus";
 import type { CardParams, FeeForm } from "@/types/card";
 import { validateCarNumber } from "@/utils/validate";
 import { useRoute, useRouter } from "vue-router";
-import { createCardAPI, getCardDetailAPI } from "@/apis/card";
+import { createCardAPI, getCardDetailAPI, updateCardAPI } from "@/apis/card";
 
 const loading = ref(false);
 const carInfoFormRef = ref();
@@ -232,7 +232,7 @@ const confirmAdd = () => {
     if (valid) {
       feeFormRef.value.validate(async (valid: any) => {
         if (valid) {
-          const payload = {
+          const payload:any = {
             paymentAmount: feeForm.value.paymentAmount,
             paymentMethod: feeForm.value.paymentMethod,
             ...carInfoForm.value,
@@ -240,9 +240,13 @@ const confirmAdd = () => {
             cardStartDate: feeForm.value.payTime[0],
             cardEndDate: feeForm.value.payTime[1],
           };
-          console.log(payload);
           try {
-            await createCardAPI(payload);
+            if(id.value){
+              payload.rechargeId = feeForm.value.rechargeId
+              await updateCardAPI(payload)
+            }else{
+              await createCardAPI(payload);
+            }
             router.back();
           } catch (error) {
             // 处理错误，例如显示通知
