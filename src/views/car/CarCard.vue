@@ -34,11 +34,17 @@
       <el-button type="primary" @click="$router.push('/cardAdd')"
         >添加月卡</el-button
       >
-      <el-button>批量删除</el-button>
+      <el-button @click="delCartList">批量删除</el-button>
     </div>
     <!-- 表格区域 -->
     <div class="table">
-      <el-table style="width: 100%" :data="cardList" v-loading="loading">
+      <el-table
+        style="width: 100%"
+        :data="cardList"
+        v-loading="loading"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="55" />
         <el-table-column type="index" label="序号" width="100" />
         <el-table-column align="center" label="车主名称" prop="personName" />
         <el-table-column align="center" label="联系方式" prop="phoneNumber" />
@@ -56,7 +62,9 @@
             <el-button size="small" type="text" @click="editCard(id)"
               >编辑</el-button
             >
-            <el-button size="small" type="text">删除</el-button>
+            <el-button size="small" type="text" @click="delCard(id)"
+              >删除</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -79,8 +87,9 @@
 
 <script lang="ts" setup>
 // 导入所需的 API 和类型
-import { getCardListAPI } from "@/apis/card";
+import { delAllCardAPI, delCardAPI, getCardListAPI } from "@/apis/card";
 import type { Card, CardListParams } from "@/types/card";
+import { ElMessageBox, ElMessage } from "element-plus";
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
@@ -102,7 +111,42 @@ const params = ref<CardListParams>({
   personName: undefined, // 车主姓名
   cardStatus: undefined, // 车辆状态
 });
-
+// 已选择列表
+const selectedCarList = ref<Card[]>([]);
+const handleSelectionChange = (rowList: Card[]) => {
+  selectedCarList.value = rowList;
+};
+const delCartList = () => {
+  ElMessageBox.confirm("此操作将永久删除选择的月卡, 是否继续?", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+    .then(async () => {
+      // 未选择删除的 id，给提示
+      if (selectedCarList.value.length === 0) {
+        ElMessage({
+          type: "warning",
+          message: "请选择要删除的月卡!",
+        });
+      } else {
+        // 处理id
+        await delAllCardAPI(selectedCarList.value.map((item) => item.id));
+        await getCardList();
+        ElMessage({
+          type: "success",
+          message: "删除成功!",
+        });
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+// 组件挂载时获取月卡列表
+onMounted(() => {
+  getCardList();
+});
 // 定义月卡列表和总数
 const cardList = ref<Card[]>([]);
 const total = ref(0);
@@ -149,11 +193,25 @@ const sizeChangeFn = (pageSize: number) => {
   params.value.pageSize = pageSize;
   getCardList();
 };
-
-// 组件挂载时获取月卡列表
-onMounted(() => {
-  getCardList();
-});
+// 删除逻辑
+const delCard = (id: string) => {
+  ElMessageBox.confirm("此操作将永久删除该月卡, 是否继续?", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+    .then(async () => {
+      await delCardAPI(id);
+      getCardList();
+      ElMessage({
+        type: "success",
+        message: "删除成功!",
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
 
 // 查询按钮的处理函数
 const doSearch = () => {

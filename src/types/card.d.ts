@@ -132,6 +132,6 @@ export interface CardDetail {
 export interface FeeForm {
   rechargeId?: number; // 缴费ID（可选）
   payTime: [string, string]; // 支付时间范围
-  paymentAmount: number; // 支付金额
+  paymentAmount?: number; // 支付金额
   paymentMethod: string; // 支付方式
 }

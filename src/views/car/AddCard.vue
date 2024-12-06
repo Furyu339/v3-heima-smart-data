@@ -1,7 +1,7 @@
 <template>
   <div class="add-card" v-loading="loading">
     <header class="add-header">
-      <el-page-header content="增加月卡" @back="$router.back()" />
+      <el-page-header :content="title" @back="$router.back()" />
     </header>
     <main class="add-main">
       <div class="form-container">
@@ -76,7 +76,7 @@
 
 <script lang="ts" setup>
 import { ref, computed, onMounted } from "vue";
-import type { FormRules } from "element-plus";
+import { ElMessage, type FormRules } from "element-plus";
 import type { CardParams, FeeForm } from "@/types/card";
 import { validateCarNumber } from "@/utils/validate";
 import { useRoute, useRouter } from "vue-router";
@@ -89,6 +89,9 @@ const router = useRouter();
 const route = useRoute();
 const id = computed(() => {
   return route.query.id as string;
+});
+const title = computed(() => {
+  return id.value ? "编辑月卡" : "新增月卡";
 });
 
 const getDetail = async () => {
@@ -182,7 +185,7 @@ const carInfoRules: FormRules<CardParams> = {
 // 缴费信息表单
 const feeForm = ref<FeeForm>({
   payTime: ["", ""], // 支付时间
-  paymentAmount: 0, // 支付金额
+  paymentAmount: undefined, // 支付金额
   paymentMethod: "", // 支付方式
 });
 
@@ -232,7 +235,7 @@ const confirmAdd = () => {
     if (valid) {
       feeFormRef.value.validate(async (valid: any) => {
         if (valid) {
-          const payload:any = {
+          const payload: any = {
             paymentAmount: feeForm.value.paymentAmount,
             paymentMethod: feeForm.value.paymentMethod,
             ...carInfoForm.value,
@@ -241,15 +244,27 @@ const confirmAdd = () => {
             cardEndDate: feeForm.value.payTime[1],
           };
           try {
-            if(id.value){
-              payload.rechargeId = feeForm.value.rechargeId
-              await updateCardAPI(payload)
-            }else{
+            if (id.value) {
+              payload.rechargeId = feeForm.value.rechargeId;
+              await updateCardAPI(payload);
+              ElMessage({
+                message: "修改成功",
+                type: "success",
+              });
+            } else {
               await createCardAPI(payload);
+              ElMessage({
+                message: "添加成功",
+                type: "success",
+              });
             }
             router.back();
           } catch (error) {
             // 处理错误，例如显示通知
+            ElMessage({
+              message: "添加失败" + error,
+              type: "error",
+            });
             console.error(error);
           }
         }
