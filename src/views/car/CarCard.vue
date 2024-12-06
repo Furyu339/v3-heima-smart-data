@@ -19,7 +19,7 @@
     </div>
     <!-- 表格区域 -->
     <div class="table">
-      <el-table style="width: 100%" :data="cardList">
+      <el-table style="width: 100%" :data="cardList" v-loading="loading">
         <el-table-column type="index" label="序号" width="100" />
         <el-table-column align="center" label="车主名称" prop="personName" />
         <el-table-column align="center" label="联系方式" prop="phoneNumber" />
@@ -41,8 +41,17 @@
       </el-table>
     </div>
     <!-- 分页 -->
-    <div class="page-container">
-      <el-pagination layout="total, prev, pager, next" :total="0" />
+    <div class="page-container" style="float: right; margin-top: 10px">
+      <el-pagination
+        v-model:current-page="params.page"
+        v-model:page-size="params.pageSize"
+        :page-sizes="[10, 20, 30, 40]"
+        size="default"
+        layout="total, prev, pager, next,  sizes"
+        :total="total"
+        @current-change="pageChange"
+        @size-change="sizeChangeFn"
+      />
     </div>
   </div>
 </template>
@@ -51,17 +60,32 @@
 import { getCardListAPI } from "@/apis/card";
 import type { Card, CardListParams } from "@/types/card";
 
+const loading = ref(false);
+
 const params = ref<CardListParams>({
   page: 1,
   pageSize: 10,
+  carNumber: undefined, // 车辆号码
+  personName: undefined, // 车主姓名
+  cardStatus: undefined, // 车辆状态
 });
 // 月卡列表
 const cardList = ref<Card[]>([]);
 const total = ref(0);
 const getCardList = async () => {
+  loading.value = true;
   const res = await getCardListAPI(params.value);
   cardList.value = res.data.rows;
   total.value = res.data.total;
+  loading.value = false;
+};
+const pageChange = (page: number) => {
+  params.value.page = page;
+  getCardList();
+};
+const sizeChangeFn = (pageSize: number) => {
+  params.value.pageSize = pageSize;
+  getCardList();
 };
 onMounted(() => {
   getCardList();
