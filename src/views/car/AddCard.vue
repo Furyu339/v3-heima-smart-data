@@ -75,11 +75,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted } from "vue";
 import { ElMessage, type FormRules } from "element-plus";
 import type { CardParams, FeeForm } from "@/types/card";
 import { validateCarNumber } from "@/utils/validate";
-import { useRoute, useRouter } from "vue-router";
 import { createCardAPI, getCardDetailAPI, updateCardAPI } from "@/apis/card";
 
 const loading = ref(false);

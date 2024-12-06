@@ -8,7 +8,7 @@ import AutoImport from 'unplugin-auto-import/vite';
 export default defineConfig({
   plugins: [vue(), 
     AutoImport({
-      imports: ['vue'], // 自动引入 'vue' 中的 API，例如 ref、reactive 等
+      imports: ['vue','vue-router','pinia'], // 自动引入 'vue' 中的 API，例如 ref、reactive 等
       dts: 'src/auto-imports.d.ts', // 生成的自动引入类型声明文件
     }),
     vueJsx()],

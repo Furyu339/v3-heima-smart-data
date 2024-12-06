@@ -90,8 +90,6 @@
 import { delAllCardAPI, delCardAPI, getCardListAPI } from "@/apis/card";
 import type { Card, CardListParams } from "@/types/card";
 import { ElMessageBox, ElMessage } from "element-plus";
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
 
 // 定义加载状态
 const loading = ref(false);
