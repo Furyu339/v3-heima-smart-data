@@ -47,6 +47,10 @@ export const routes: RouteRecordRaw[] = [
         meta: { title: "企业管理", permission: "park:enterprise" },
         component: () => import("@/views/park/ParkEnterprise.vue"),
       },
+      {
+        path: '/exterpriseAdd',
+        component: () => import('@/views/park/AddEnterprise.vue')
+    },
     ],
   },
 

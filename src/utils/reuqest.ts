@@ -6,7 +6,7 @@ import { useUserStore } from "@/stores/user";
 // 创建 Axios 实例
 const service = axios.create({
   baseURL: "https://api-hmzs.itheima.net/tj",
-  timeout: 5000, // request timeout
+  timeout: 50000, // request timeout
 });
 
 // 请求拦截器
