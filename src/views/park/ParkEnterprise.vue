@@ -1,7 +1,89 @@
-<script setup lang="ts"></script>
-
 <template>
-  <div class="park-enterprise-page">park-enterprise</div>
+  <div class="building-container">
+    <!-- 搜索区域 -->
+    <div class="search-container">
+      <div class="search-label">企业名称：</div>
+      <el-input clearable placeholder="请输入内容" class="search-main" />
+      <el-button type="primary">查询</el-button>
+    </div>
+    <div class="create-container">
+      <el-button type="primary">添加企业</el-button>
+    </div>
+    <!-- 表格区域 -->
+    <div class="table">
+      <el-table style="width: 100%" :data="[]">
+        <el-table-column type="index" label="序号" width="120" />
+        <el-table-column label="企业名称" width="320" />
+        <el-table-column label="联系人" />
+        <el-table-column label="联系电话" />
+        <el-table-column label="操作">
+          <template #default>
+            <el-button size="small" type="text">添加合同</el-button>
+            <el-button size="small" type="text">查看</el-button>
+            <el-button size="small" type="text">编辑</el-button>
+            <el-button size="small" type="text">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+    <div class="page-container">
+      <el-pagination layout="total, prev, pager, next" />
+    </div>
+  </div>
 </template>
 
-<style lang="scss" scoped></style>
+<script lang="ts" setup>
+import { getEnterpriseListAPI } from "@/apis/enterprise";
+import type { Enterprise, EnterpriseListParams } from "@/types/enterprise";
+
+// 1. 获取企业列表
+const exterpriseList = ref<Enterprise[]>([]);
+const params = ref<EnterpriseListParams>({
+  page: 1,
+  pageSize: 10,
+});
+
+onMounted(() => {
+  getExterpriseList();
+});
+
+const getExterpriseList = async () => {
+  const res = await getEnterpriseListAPI(params.value);
+  exterpriseList.value = res.data?.rows;
+};
+</script>
+
+<style lang="scss" scoped>
+.building-container {
+  padding: 20px;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgb(237, 237, 237, 0.9);
+  padding-bottom: 20px;
+
+  .search-label {
+    width: 100px;
+  }
+
+  .search-main {
+    width: 220px;
+    margin-right: 10px;
+  }
+}
+
+.create-container {
+  margin: 10px 0px;
+}
+
+.page-container {
+  padding: 4px 0px;
+  text-align: right;
+}
+
+.form-container {
+  padding: 0px 80px;
+}
+</style>
