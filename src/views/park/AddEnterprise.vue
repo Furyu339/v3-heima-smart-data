@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getIndustryListAPI, uploadAPI } from "@/apis/enterprise";
 import type { Industry } from "@/types/enterprise";
-import type { UploadUserFile, UploadRequestOptions } from "element-plus";
+import { type UploadUserFile, type UploadRequestOptions, ElMessage, type UploadRawFile } from "element-plus";
 import { ref } from "vue";
 
 const addForm = ref({
@@ -16,6 +16,7 @@ const addForm = ref({
 });
 
 const fileList = ref<UploadUserFile[]>([]); // 营业执照列表
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const uploadRequest = async (options: UploadRequestOptions): Promise<any> => {
   const file = options.file;
@@ -43,6 +44,18 @@ const getIndustryList = async () => {
   const res = await getIndustryListAPI();
   industryList.value = res.data;
 };
+const beforeUpload = (file: UploadRawFile) => {
+  const allowImgType = ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)
+  const isLt5M = file.size / 1024 / 1024 < 5
+
+  if (!allowImgType) {
+    ElMessage.error('上传营业执照图片只能是 PNG/JPG/JPEG 格式!')
+  }
+  if (!isLt5M) {
+    ElMessage.error('上传营业执照图片大小不能超过 5MB!')
+  }
+  return allowImgType && isLt5M
+}
 
 onMounted(() => {
   getIndustryList();
@@ -89,6 +102,7 @@ onMounted(() => {
                 action="#"
                 :file-list="fileList"
                 :http-request="uploadRequest"
+                 :before-upload="beforeUpload"
               >
                 <el-button size="small" type="primary">点击上传</el-button>
                 <template #tip>
