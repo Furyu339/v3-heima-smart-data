@@ -48,9 +48,9 @@ export const routes: RouteRecordRaw[] = [
         component: () => import("@/views/park/ParkEnterprise.vue"),
       },
       {
-        path: '/exterpriseAdd',
-        component: () => import('@/views/park/AddEnterprise.vue')
-    },
+        path: "/exterpriseAdd",
+        component: () => import("@/views/park/AddEnterprise.vue"),
+      },
     ],
   },
 

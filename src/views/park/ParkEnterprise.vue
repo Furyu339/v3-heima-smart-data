@@ -3,11 +3,19 @@
     <!-- 搜索区域 -->
     <div class="search-container">
       <div class="search-label">企业名称：</div>
-      <el-input v-model="params.name" clearable placeholder="请输入企业名称" class="search-main" @clear="doSearch" />
-  <el-button type="primary" @click="doSearch">查询</el-button>
+      <el-input
+        v-model="params.name"
+        clearable
+        placeholder="请输入企业名称"
+        class="search-main"
+        @clear="doSearch"
+      />
+      <el-button type="primary" @click="doSearch">查询</el-button>
     </div>
     <div class="create-container">
-      <el-button type="primary" @click="$router.push('/exterpriseAdd')">添加企业</el-button>
+      <el-button type="primary" @click="$router.push('/exterpriseAdd')"
+        >添加企业</el-button
+      >
     </div>
     <!-- 表格区域 -->
     <div class="table" v-loading="loading">
@@ -54,7 +62,7 @@ const exterpriseList = ref<Enterprise[]>([]);
 const params = ref<EnterpriseListParams>({
   page: 1,
   pageSize: 10,
-  name: '' // 增加字段name
+  name: "", // 增加字段name
 });
 
 onMounted(() => {
@@ -62,9 +70,9 @@ onMounted(() => {
 });
 
 const doSearch = () => {
-  params.value.page = 1
-  getExterpriseList()
-}
+  params.value.page = 1;
+  getExterpriseList();
+};
 
 const getExterpriseList = async () => {
   loading.value = true;
@@ -73,13 +81,12 @@ const getExterpriseList = async () => {
   total.value = res.data?.total;
   loading.value = false;
 };
-const pageChange = (page: number)=>{
+const pageChange = (page: number) => {
   // 更改参数
-  params.value.page = page
+  params.value.page = page;
   // 重新获取数据渲染
-  getExterpriseList()
-}
-
+  getExterpriseList();
+};
 </script>
 
 <style lang="scss" scoped>

@@ -229,10 +229,11 @@ const payMethodList = [
 
 // 确定添加按钮
 const confirmAdd = () => {
-  carInfoFormRef.value.validate((valid: any) => {
+  carInfoFormRef.value.validate((valid: boolean) => {
     if (valid) {
-      feeFormRef.value.validate(async (valid: any) => {
+      feeFormRef.value.validate(async (valid: boolean) => {
         if (valid) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const payload: any = {
             paymentAmount: feeForm.value.paymentAmount,
             paymentMethod: feeForm.value.paymentMethod,

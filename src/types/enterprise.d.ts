@@ -49,3 +49,13 @@ export interface Enterprise {
    */
   name: string;
 }
+export interface Industry {
+  /**
+   * 行业code
+   */
+  industryCode: number;
+  /**
+   * 行业名称
+   */
+  industryName: string;
+}
