@@ -1,4 +1,5 @@
 import type {
+  EnterpriseFile,
   EnterpriseListData,
   EnterpriseListParams,
   Industry,
@@ -24,6 +25,6 @@ export const getIndustryListAPI = () => {
  * 上传合同
  * @returns
  */
-export const uploadAPI = (data: FormData) =>{
-  return request('/upload', 'POST', data)
-}
+export const uploadAPI = (data: FormData) => {
+  return request<EnterpriseFile>("/upload", "POST", data);
+};

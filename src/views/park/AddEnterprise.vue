@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { getIndustryListAPI } from "@/apis/enterprise";
+import { getIndustryListAPI, uploadAPI } from "@/apis/enterprise";
 import type { Industry } from "@/types/enterprise";
+import type { UploadUserFile, UploadRequestOptions } from "element-plus";
 import { ref } from "vue";
 
 const addForm = ref({
@@ -13,6 +14,29 @@ const addForm = ref({
   businessLicenseUrl: "", // 营业执照url
   businessLicenseId: "", // 营业执照id
 });
+
+const fileList = ref<UploadUserFile[]>([]); // 营业执照列表
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const uploadRequest = async (options: UploadRequestOptions): Promise<any> => {
+  const file = options.file;
+
+  // 处理formData类型参数
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("type", "businessLicense");
+  const res = await uploadAPI(formData);
+
+  // 赋值表单数据
+  addForm.value.businessLicenseId = res.data.id;
+  addForm.value.businessLicenseUrl = res.data.url;
+
+  // el-upload 显示已上传文件列表
+  // el-upload 组件要求列表对象必须有 name 和 url 属性才可以
+  fileList.value.push({
+    name: file.name,
+    url: res.data.url,
+  });
+};
 
 const industryList = ref<Industry[]>([]); // 可选行业列表
 const getIndustryList = async () => {
@@ -60,7 +84,20 @@ onMounted(() => {
             <el-form-item label="联系电话">
               <el-input v-model="addForm.contactNumber" />
             </el-form-item>
-            <el-form-item label="营业执照" />
+            <el-form-item label="营业执照">
+              <el-upload
+                action="#"
+                :file-list="fileList"
+                :http-request="uploadRequest"
+              >
+                <el-button size="small" type="primary">点击上传</el-button>
+                <template #tip>
+                  <div class="el-upload__tip">
+                    支持扩展名：.png .jpg .jpeg, 文件大小不得超过5M
+                  </div>
+                </template>
+              </el-upload>
+            </el-form-item>
           </el-form>
         </div>
       </div>

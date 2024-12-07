@@ -59,3 +59,55 @@ export interface Industry {
    */
   industryName: string;
 }
+/**
+ * empty object
+ */
+export interface EnterpriseParams {
+  /**
+   * 上传文件id
+   */
+  businessLicenseId: string;
+  /**
+   * 上传文件rl
+   */
+  businessLicenseUrl: string;
+  /**
+   * 企业联系人
+   */
+  contact: string;
+  /**
+   * 企业联系方式
+   */
+  contactNumber: string;
+  /**
+   * 行业编号
+   */
+  industryCode: string;
+  /**
+   * 企业法人
+   */
+  legalPerson: string;
+  /**
+   * 企业名称
+   */
+  name: string;
+  /**
+   * 注册地址
+   */
+  registeredAddress: string;
+}
+
+export interface EnterpriseFile {
+  /**
+   * 主键id
+   */
+  id: string;
+  /**
+   * 上传文件名称
+   */
+  name: string;
+  /**
+   * 上传附件url
+   */
+  url: string;
+}
