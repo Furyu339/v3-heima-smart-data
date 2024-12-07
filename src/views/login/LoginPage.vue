@@ -2,7 +2,7 @@
 import { loginAPI } from "@/apis/user";
 import { FORMDATA_KEY } from "@/constants";
 import { useUserStore } from "@/stores/user";
-import { ElMessage, type FormInstance } from "element-plus";
+import { type FormInstance } from "element-plus";
 import { useRouter } from "vue-router";
 
 const formData = ref({
