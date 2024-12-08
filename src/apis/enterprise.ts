@@ -35,14 +35,22 @@ export const uploadAPI = (data: FormData) => {
  * @param {*} data
  * @returns
  */
-export const createEnterpriseAPI = (data: EnterpriseParams) =>{
-  return request('/park/enterprise', 'POST', data)
-}
+export const createEnterpriseAPI = (data: EnterpriseParams) => {
+  return request("/park/enterprise", "POST", data);
+};
 /**
  * 获取企业详情
  * @param {*} id
  * @returns
  */
 export const getEnterpriseDetailAPI = (id: string) => {
-  return request<EnterpriseDetail>(`/park/enterprise/${id}`)
+  return request<EnterpriseDetail>(`/park/enterprise/${id}`);
+};
+/**
+ * 更新企业
+ * @param {*} data
+ * @returns
+ */
+export const updateEnterpriseAPI = (data: EnterpriseParams) => {
+  return request('/park/enterprise', 'PUT', data)
 }

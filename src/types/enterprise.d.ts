@@ -95,6 +95,8 @@ export interface EnterpriseParams {
    * 注册地址
    */
   registeredAddress: string;
+
+  id?: string
 }
 
 export interface EnterpriseFile {

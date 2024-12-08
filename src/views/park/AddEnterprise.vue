@@ -1,6 +1,12 @@
 <script setup lang="ts">
 // 导入所需的API函数和类型定义
-import { createEnterpriseAPI, getEnterpriseDetailAPI, getIndustryListAPI, uploadAPI } from "@/apis/enterprise";
+import {
+  createEnterpriseAPI,
+  getEnterpriseDetailAPI,
+  getIndustryListAPI,
+  updateEnterpriseAPI,
+  uploadAPI,
+} from "@/apis/enterprise";
 import type { Industry } from "@/types/enterprise";
 import { validMobile } from "@/utils/validate";
 import {
@@ -10,7 +16,7 @@ import {
   type UploadRawFile,
 } from "element-plus";
 
-const route = useRoute()
+const route = useRoute();
 const id = computed(() => {
   return route.query.id as string;
 });
@@ -107,14 +113,24 @@ const beforeUpload = (file: UploadRawFile) => {
 };
 
 const ruleForm = ref();
-const router = useRouter()
+const router = useRouter();
 const confirmSubmit = () => {
-  ruleForm.value.validate(async(valid: boolean) => {
-    if (!valid) return
-    // 调用接口
-    await createEnterpriseAPI(addForm.value)
+  ruleForm.value.validate(async (valid: boolean) => {
+    if (!valid) return;
+    if (id.value) {
+      // 编辑
+      await updateEnterpriseAPI({
+        ...addForm.value,
+        id: id.value
+      })
+    } else {
+      // 调用接口
+      await createEnterpriseAPI(addForm.value)
+    } 
     // 返回列表页
-    router.back()
+    router.push("/park/enterprise").then(() => {
+    window.location.reload();
+  });
   });
 };
 const resetForm = () => {
@@ -122,32 +138,49 @@ const resetForm = () => {
 };
 
 const btnBack = () => {
-  router.push('/park/enterprise').then(() => {
-      window.location.reload()
-      console.log('页面刷新了')
-    })
+  router.push("/park/enterprise").then(() => {
+    window.location.reload();
+  });
 };
 
 const getEnterpriseDetail = async () => {
-  loading.value = true
-  const res = await getEnterpriseDetailAPI(id.value)
-  const { businessLicenseId, businessLicenseUrl, contact, contactNumber, industryCode, legalPerson, name, registeredAddress, businessLicenseName } = res.data
-  addForm.value = { businessLicenseId, businessLicenseUrl, contact, contactNumber, industryCode, legalPerson, name, registeredAddress }
+  loading.value = true;
+  const res = await getEnterpriseDetailAPI(id.value);
+  const {
+    businessLicenseId,
+    businessLicenseUrl,
+    contact,
+    contactNumber,
+    industryCode,
+    legalPerson,
+    name,
+    registeredAddress,
+    businessLicenseName,
+  } = res.data;
+  addForm.value = {
+    businessLicenseId,
+    businessLicenseUrl,
+    contact,
+    contactNumber,
+    industryCode,
+    legalPerson,
+    name,
+    registeredAddress,
+  };
   fileList.value.push({
     name: businessLicenseName,
-    url: businessLicenseUrl
-  })
-  loading.value = false
-}
+    url: businessLicenseUrl,
+  });
+  loading.value = false;
+};
 
 // 组件挂载时获取行业列表数据
 onMounted(() => {
   getIndustryList();
   if (id.value) {
-    getEnterpriseDetail()
+    getEnterpriseDetail();
   }
 });
-
 </script>
 
 <template>
@@ -168,7 +201,7 @@ onMounted(() => {
             label-width="100px"
             :model="addForm"
             :rules="addRules"
-             v-loading="loading"
+            v-loading="loading"
           >
             <el-form-item label="企业名称" prop="name">
               <el-input v-model="addForm.name" />

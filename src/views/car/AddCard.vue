@@ -1,210 +1,208 @@
-  <script lang="ts" setup>
-  import { ElMessage, type FormRules } from "element-plus";
-  import type { CardParams, FeeForm } from "@/types/card";
-  import { createCardAPI, getCardDetailAPI, updateCardAPI } from "@/apis/card";
-  import { validateCarNumber } from "@/utils/validate";
-  
-  const loading = ref(false);
-  const carInfoFormRef = ref();
-  const feeFormRef = ref();
-  const router = useRouter();
-  const route = useRoute();
-  const id = computed(() => {
-    return route.query.id as string;
-  });
-  const title = computed(() => {
-    return id.value ? "编辑月卡" : "新增月卡";
-  });
-  
-  const getDetail = async () => {
-    loading.value = true;
-    try {
-      const res = await getCardDetailAPI(id.value);
-      // 回填车辆信息表单
-      const { carInfoId, personName, phoneNumber, carNumber, carBrand } =
-        res.data;
-      carInfoForm.value = {
-        personName,
-        phoneNumber,
-        carNumber,
-        carBrand,
-        carInfoId,
-      };
-  
-      // 回填缴费信息表单
-      const {
-        rechargeId,
-        cardStartDate,
-        cardEndDate,
-        paymentAmount,
-        paymentMethod,
-      } = res.data;
-      feeForm.value = {
-        rechargeId,
-        paymentAmount,
-        paymentMethod,
-        payTime: [cardStartDate, cardEndDate],
-      };
-    } catch (error) {
-      // 处理错误，例如显示通知
-      console.error(error);
-    } finally {
-      loading.value = false;
-    }
-  };
-  
-  onMounted(() => {
-    if (id.value) {
-      getDetail();
-    }
-  });
-  
-  
-  
-  // 车辆信息表单
-  const carInfoForm = ref<CardParams>({
-    personName: "", // 车主姓名
-    phoneNumber: "", // 联系方式
-    carNumber: "", // 车牌号码
-    carBrand: "", // 车辆品牌
-  });
-  
-  // 车辆信息表单规则
-  const carInfoRules: FormRules<CardParams> = {
-    personName: [
-      {
-        required: true,
-        message: "请输入车主姓名",
-        trigger: "blur",
-      },
-    ],
-    phoneNumber: [
-      {
-        required: true,
-        message: "请输入联系方式",
-        trigger: "blur",
-      },
-      { pattern: /^1[34578]\d{9}$/, message: "请输入正确格式手机号" },
-    ],
-    carNumber: [
-      {
-        required: true,
-        message: "请输入车辆号码",
-        trigger: "blur",
-      },
-      {
-        validator: validateCarNumber,
-        trigger: "blur",
-      },
-    ],
-    carBrand: [
-      {
-        required: true,
-        message: "请输入车辆品牌",
-        trigger: "blur",
-      },
-    ],
-  };
-  
-  // 缴费信息表单
-  const feeForm = ref<FeeForm>({
-    payTime: ["", ""], // 支付时间
-    paymentAmount: undefined, // 支付金额
-    paymentMethod: "", // 支付方式
-  });
-  
-  // 缴费规则
-  const feeFormRules = {
-    payTime: [
-      {
-        required: true,
-        message: "请选择支付时间",
-      },
-    ],
-    paymentAmount: [
-      {
-        required: true,
-        message: "请输入支付金额",
-        trigger: "blur",
-      },
-    ],
-    paymentMethod: [
-      {
-        required: true,
-        message: "请选择支付方式",
-        trigger: "change",
-      },
-    ],
-  };
-  
-  // 支付方式列表
-  const payMethodList = [
+<script lang="ts" setup>
+import { ElMessage, type FormRules } from "element-plus";
+import type { CardParams, FeeForm } from "@/types/card";
+import { createCardAPI, getCardDetailAPI, updateCardAPI } from "@/apis/card";
+import { validateCarNumber } from "@/utils/validate";
+
+const loading = ref(false);
+const carInfoFormRef = ref();
+const feeFormRef = ref();
+const router = useRouter();
+const route = useRoute();
+const id = computed(() => {
+  return route.query.id as string;
+});
+const title = computed(() => {
+  return id.value ? "编辑月卡" : "新增月卡";
+});
+
+const getDetail = async () => {
+  loading.value = true;
+  try {
+    const res = await getCardDetailAPI(id.value);
+    // 回填车辆信息表单
+    const { carInfoId, personName, phoneNumber, carNumber, carBrand } =
+      res.data;
+    carInfoForm.value = {
+      personName,
+      phoneNumber,
+      carNumber,
+      carBrand,
+      carInfoId,
+    };
+
+    // 回填缴费信息表单
+    const {
+      rechargeId,
+      cardStartDate,
+      cardEndDate,
+      paymentAmount,
+      paymentMethod,
+    } = res.data;
+    feeForm.value = {
+      rechargeId,
+      paymentAmount,
+      paymentMethod,
+      payTime: [cardStartDate, cardEndDate],
+    };
+  } catch (error) {
+    // 处理错误，例如显示通知
+    console.error(error);
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(() => {
+  if (id.value) {
+    getDetail();
+  }
+});
+
+// 车辆信息表单
+const carInfoForm = ref<CardParams>({
+  personName: "", // 车主姓名
+  phoneNumber: "", // 联系方式
+  carNumber: "", // 车牌号码
+  carBrand: "", // 车辆品牌
+});
+
+// 车辆信息表单规则
+const carInfoRules: FormRules<CardParams> = {
+  personName: [
     {
-      id: "Alipay",
-      name: "支付宝",
+      required: true,
+      message: "请输入车主姓名",
+      trigger: "blur",
+    },
+  ],
+  phoneNumber: [
+    {
+      required: true,
+      message: "请输入联系方式",
+      trigger: "blur",
+    },
+    { pattern: /^1[34578]\d{9}$/, message: "请输入正确格式手机号" },
+  ],
+  carNumber: [
+    {
+      required: true,
+      message: "请输入车辆号码",
+      trigger: "blur",
     },
     {
-      id: "WeChat",
-      name: "微信",
+      validator: validateCarNumber,
+      trigger: "blur",
     },
+  ],
+  carBrand: [
     {
-      id: "Cash",
-      name: "线下",
+      required: true,
+      message: "请输入车辆品牌",
+      trigger: "blur",
     },
-  ];
-  
-  // 确定添加按钮
-  const confirmAdd = () => {
-    carInfoFormRef.value.validate((valid: boolean) => {
-      if (valid) {
-        feeFormRef.value.validate(async (valid: boolean) => {
-          if (valid) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const payload: any = {
-              paymentAmount: feeForm.value.paymentAmount,
-              paymentMethod: feeForm.value.paymentMethod,
-              ...carInfoForm.value,
-              // 单独处理时间
-              cardStartDate: feeForm.value.payTime[0],
-              cardEndDate: feeForm.value.payTime[1],
-            };
-            try {
-              if (id.value) {
-                payload.rechargeId = feeForm.value.rechargeId;
-                await updateCardAPI(payload);
-                ElMessage({
-                  message: "修改成功",
-                  type: "success",
-                });
-              } else {
-                await createCardAPI(payload);
-                ElMessage({
-                  message: "添加成功",
-                  type: "success",
-                });
-              }
-              router.back();
-            } catch (error) {
-              // 处理错误，例如显示通知
+  ],
+};
+
+// 缴费信息表单
+const feeForm = ref<FeeForm>({
+  payTime: ["", ""], // 支付时间
+  paymentAmount: undefined, // 支付金额
+  paymentMethod: "", // 支付方式
+});
+
+// 缴费规则
+const feeFormRules = {
+  payTime: [
+    {
+      required: true,
+      message: "请选择支付时间",
+    },
+  ],
+  paymentAmount: [
+    {
+      required: true,
+      message: "请输入支付金额",
+      trigger: "blur",
+    },
+  ],
+  paymentMethod: [
+    {
+      required: true,
+      message: "请选择支付方式",
+      trigger: "change",
+    },
+  ],
+};
+
+// 支付方式列表
+const payMethodList = [
+  {
+    id: "Alipay",
+    name: "支付宝",
+  },
+  {
+    id: "WeChat",
+    name: "微信",
+  },
+  {
+    id: "Cash",
+    name: "线下",
+  },
+];
+
+// 确定添加按钮
+const confirmAdd = () => {
+  carInfoFormRef.value.validate((valid: boolean) => {
+    if (valid) {
+      feeFormRef.value.validate(async (valid: boolean) => {
+        if (valid) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const payload: any = {
+            paymentAmount: feeForm.value.paymentAmount,
+            paymentMethod: feeForm.value.paymentMethod,
+            ...carInfoForm.value,
+            // 单独处理时间
+            cardStartDate: feeForm.value.payTime[0],
+            cardEndDate: feeForm.value.payTime[1],
+          };
+          try {
+            if (id.value) {
+              payload.rechargeId = feeForm.value.rechargeId;
+              await updateCardAPI(payload);
               ElMessage({
-                message: "添加失败" + error,
-                type: "error",
+                message: "修改成功",
+                type: "success",
               });
-              console.error(error);
+            } else {
+              await createCardAPI(payload);
+              ElMessage({
+                message: "添加成功",
+                type: "success",
+              });
             }
+            router.back();
+          } catch (error) {
+            // 处理错误，例如显示通知
+            ElMessage({
+              message: "添加失败" + error,
+              type: "error",
+            });
+            console.error(error);
           }
-        });
-      }
-    });
-  };
-  
-  // 重置表单
-  const resetForm = () => {
-    // el-form 会用默认 v-model 的初始值作为重置的数据
-    feeFormRef.value.resetFields();
-    carInfoFormRef.value.resetFields();
-  };
-  </script>
+        }
+      });
+    }
+  });
+};
+
+// 重置表单
+const resetForm = () => {
+  // el-form 会用默认 v-model 的初始值作为重置的数据
+  feeFormRef.value.resetFields();
+  carInfoFormRef.value.resetFields();
+};
+</script>
 
 <template>
   <div class="add-card" v-loading="loading">
@@ -281,8 +279,6 @@
     </footer>
   </div>
 </template>
-
-
 
 <style scoped lang="scss">
 .add-card {
