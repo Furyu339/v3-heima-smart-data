@@ -1,4 +1,5 @@
 import type {
+  EnterpriseDetail,
   EnterpriseFile,
   EnterpriseListData,
   EnterpriseListParams,
@@ -36,4 +37,12 @@ export const uploadAPI = (data: FormData) => {
  */
 export const createEnterpriseAPI = (data: EnterpriseParams) =>{
   return request('/park/enterprise', 'POST', data)
+}
+/**
+ * 获取企业详情
+ * @param {*} id
+ * @returns
+ */
+export const getEnterpriseDetailAPI = (id: string) => {
+  return request<EnterpriseDetail>(`/park/enterprise/${id}`)
 }

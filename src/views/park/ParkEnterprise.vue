@@ -30,10 +30,10 @@
         <el-table-column align="center" label="联系人" prop="contact" />
         <el-table-column align="center" label="联系电话" prop="contactNumber" />
         <el-table-column align="center" label="操作" width="350">
-          <template>
+          <template #default="{ row:{id} }">
             <el-button size="small" type="text">添加合同</el-button>
             <el-button size="small" type="text">查看</el-button>
-            <el-button size="small" type="text">编辑</el-button>
+            <el-button size="small" type="text" @click="editRent(id)">编辑</el-button>
             <el-button size="small" type="text">删除</el-button>
           </template>
         </el-table-column>
@@ -68,6 +68,16 @@ const params = ref<EnterpriseListParams>({
 onMounted(() => {
   getExterpriseList();
 });
+
+const router = useRouter()
+const editRent = (id: string) => {
+  router.push({
+    path: '/exterpriseAdd',
+    query: {
+      id
+    }
+  })
+}
 
 const doSearch = () => {
   params.value.page = 1;

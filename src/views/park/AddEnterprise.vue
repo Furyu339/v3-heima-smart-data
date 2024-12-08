@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // 导入所需的API函数和类型定义
-import { createEnterpriseAPI, getIndustryListAPI, uploadAPI } from "@/apis/enterprise";
+import { createEnterpriseAPI, getEnterpriseDetailAPI, getIndustryListAPI, uploadAPI } from "@/apis/enterprise";
 import type { Industry } from "@/types/enterprise";
 import { validMobile } from "@/utils/validate";
 import {
@@ -9,8 +9,12 @@ import {
   ElMessage,
   type UploadRawFile,
 } from "element-plus";
-import { ref } from "vue";
 
+const route = useRoute()
+const id = computed(() => {
+  return route.query.id as string;
+});
+const loading = ref(false);
 // 定义企业信息表单数据结构
 const addForm = ref({
   name: "", // 企业名称
@@ -117,10 +121,33 @@ const resetForm = () => {
   ruleForm.value.resetFields();
 };
 
+const btnBack = () => {
+  router.push('/park/enterprise').then(() => {
+      window.location.reload()
+      console.log('页面刷新了')
+    })
+};
+
+const getEnterpriseDetail = async () => {
+  loading.value = true
+  const res = await getEnterpriseDetailAPI(id.value)
+  const { businessLicenseId, businessLicenseUrl, contact, contactNumber, industryCode, legalPerson, name, registeredAddress, businessLicenseName } = res.data
+  addForm.value = { businessLicenseId, businessLicenseUrl, contact, contactNumber, industryCode, legalPerson, name, registeredAddress }
+  fileList.value.push({
+    name: businessLicenseName,
+    url: businessLicenseUrl
+  })
+  loading.value = false
+}
+
 // 组件挂载时获取行业列表数据
 onMounted(() => {
   getIndustryList();
+  if (id.value) {
+    getEnterpriseDetail()
+  }
 });
+
 </script>
 
 <template>
@@ -128,7 +155,7 @@ onMounted(() => {
   <div class="add-enterprise">
     <!-- 页面头部 -->
     <header class="add-header">
-      <el-page-header content="添加企业" @back="$router.back()" />
+      <el-page-header :content="id ? '编辑企业' : '添加企业'" @back="btnBack" />
     </header>
     <!-- 页面主体内容 -->
     <main class="add-main">
@@ -141,6 +168,7 @@ onMounted(() => {
             label-width="100px"
             :model="addForm"
             :rules="addRules"
+             v-loading="loading"
           >
             <el-form-item label="企业名称" prop="name">
               <el-input v-model="addForm.name" />
