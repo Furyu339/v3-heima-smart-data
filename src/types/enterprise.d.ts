@@ -96,7 +96,7 @@ export interface EnterpriseParams {
    */
   registeredAddress: string;
 
-  id?: string
+  id?: string;
 }
 
 export interface EnterpriseFile {

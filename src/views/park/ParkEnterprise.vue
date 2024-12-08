@@ -36,7 +36,9 @@
             <el-button size="small" type="text" @click="editRent(id)"
               >编辑</el-button
             >
-            <el-button size="small" type="text">删除</el-button>
+            <el-button size="small" type="text" @click="delExterprise(id)"
+              >删除</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -53,8 +55,9 @@
 </template>
 
 <script lang="ts" setup>
-import { getEnterpriseListAPI } from "@/apis/enterprise";
+import { delEnterpriseAPI, getEnterpriseListAPI } from "@/apis/enterprise";
 import type { Enterprise, EnterpriseListParams } from "@/types/enterprise";
+import { ElMessageBox, ElMessage } from "element-plus";
 
 const loading = ref(false);
 const total = ref(0);
@@ -78,6 +81,20 @@ const editRent = (id: string) => {
     query: {
       id,
     },
+  });
+};
+const delExterprise = (id: string) => {
+  ElMessageBox.confirm("确认删除该企业吗?", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  }).then(async () => {
+    await delEnterpriseAPI(id);
+    getExterpriseList();
+    ElMessage({
+      type: "success",
+      message: "删除成功!",
+    });
   });
 };
 

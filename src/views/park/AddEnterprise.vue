@@ -121,16 +121,16 @@ const confirmSubmit = () => {
       // 编辑
       await updateEnterpriseAPI({
         ...addForm.value,
-        id: id.value
-      })
+        id: id.value,
+      });
     } else {
       // 调用接口
-      await createEnterpriseAPI(addForm.value)
-    } 
+      await createEnterpriseAPI(addForm.value);
+    }
     // 返回列表页
     router.push("/park/enterprise").then(() => {
-    window.location.reload();
-  });
+      window.location.reload();
+    });
   });
 };
 const resetForm = () => {

@@ -52,5 +52,13 @@ export const getEnterpriseDetailAPI = (id: string) => {
  * @returns
  */
 export const updateEnterpriseAPI = (data: EnterpriseParams) => {
-  return request('/park/enterprise', 'PUT', data)
-}
+  return request("/park/enterprise", "PUT", data);
+};
+/**
+ * 删除企业
+ * @param {*} id
+ * @returns
+ */
+export const delEnterpriseAPI = (id: string) => {
+  return request(`/park/enterprise/${id}`, "DELETE");
+};
