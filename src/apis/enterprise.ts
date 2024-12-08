@@ -62,3 +62,11 @@ export const updateEnterpriseAPI = (data: EnterpriseParams) => {
 export const delEnterpriseAPI = (id: string) => {
   return request(`/park/enterprise/${id}`, "DELETE");
 };
+/**
+ * 获取空置中楼宇列表（未租赁）
+ * @param {*}
+ * @returns
+ */
+export const getRentBuildListAPI = () => {
+  return request<{ id: string; name: string }[]>("/park/rent/building");
+};
