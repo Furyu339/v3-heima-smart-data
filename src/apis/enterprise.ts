@@ -2,6 +2,7 @@ import type {
   EnterpriseFile,
   EnterpriseListData,
   EnterpriseListParams,
+  EnterpriseParams,
   Industry,
 } from "@/types/enterprise";
 import { request } from "@/utils/reuqest";
@@ -28,3 +29,11 @@ export const getIndustryListAPI = () => {
 export const uploadAPI = (data: FormData) => {
   return request<EnterpriseFile>("/upload", "POST", data);
 };
+/**
+ * 创建公司
+ * @param {*} data
+ * @returns
+ */
+export const createEnterpriseAPI = (data: EnterpriseParams) =>{
+  return request('/park/enterprise', 'POST', data)
+}

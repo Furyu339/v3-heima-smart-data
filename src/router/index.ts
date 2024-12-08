@@ -50,6 +50,7 @@ export const routes: RouteRecordRaw[] = [
       {
         path: "/exterpriseAdd",
         component: () => import("@/views/park/AddEnterprise.vue"),
+        meta: { hidden: true },
       },
     ],
   },
