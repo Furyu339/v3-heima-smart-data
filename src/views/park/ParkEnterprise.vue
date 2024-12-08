@@ -1,19 +1,29 @@
 <script lang="ts" setup>
-
 // 导入需要的API方法和类型，以及Element Plus的组件和类型
 import {
+  createRentAPI,
   delEnterpriseAPI, // 删除企业API
-  getEnterpriseDetailAPI, // 获取企业详情API
   getEnterpriseListAPI, // 获取企业列表API
-  getRentBuildListAPI, // 获取楼宇列表API
+  getRentBuildListAPI,
+  uploadAPI, // 获取楼宇列表API
 } from "@/apis/enterprise";
 
-import type { Enterprise, EnterpriseListParams } from "@/types/enterprise"; // 导入类型定义
+import type {
+  Enterprise,
+  EnterpriseListParams,
+  RentForm,
+} from "@/types/enterprise"; // 导入类型定义
 
-import { ElMessageBox, ElMessage, type FormRules } from "element-plus"; // Element Plus的消息提示组件及表单验证规则类型
+import {
+  ElMessageBox,
+  ElMessage,
+  type FormRules,
+  type UploadRawFile,
+  type UploadRequestOptions,
+} from "element-plus"; // Element Plus的消息提示组件及表单验证规则类型
 
 // 定义是否显示添加合同弹框的状态
-const rentDialogVisible = ref(false); 
+const rentDialogVisible = ref(false);
 
 // 定义加载状态
 const loading = ref(false);
@@ -21,30 +31,97 @@ const loading = ref(false);
 // 定义企业列表的总数
 const total = ref(0);
 
+// 上传合同
+const contractList = ref<any>([]);
+const addForm = ref();
+// 楼宇列表数据
+const buildList = ref<{ id: string; name: string }[]>([]);
+// 企业列表数据
+const exterpriseList = ref<Enterprise[]>([]);
+
+// 租赁合同表单数据
+const rentForm = ref<RentForm>({
+  buildingId: "", // 楼宇ID
+  contractId: "", // 合同ID
+  contractUrl: "", // 合同URL
+  enterpriseId: "", // 企业ID
+  type: 0, // 合同类型
+  rentTime: [], // 租赁时间范围
+});
+
 // 打开添加合同弹框的方法
-const addRent = async () => {
+const addRent = async (id:string) => {
   rentDialogVisible.value = true; // 显示弹框
   const res = await getRentBuildListAPI(); // 调用API获取楼宇列表
   buildList.value = res.data; // 更新楼宇列表
+  rentForm.value.enterpriseId = id;
 };
 
 // 关闭添加合同弹框的方法
 const closeDialog = () => {
   rentDialogVisible.value = false; // 隐藏弹框
+  addForm.value.resetFields();
 };
 
-// 楼宇列表数据
-const buildList = ref<{ id: string; name: string }[]>([]);
+// 上传前验证
+const beforeUpload = (file: UploadRawFile) => {
+  const allowImgType = [
+    "application/pdf",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/msword",
+  ].includes(file.type);
+  const isLt5M = file.size / 1024 / 1024 < 5;
 
-// 租赁合同表单数据
-const rentForm = ref({
-  buildingId: undefined, // 楼宇ID
-  contractId: undefined, // 合同ID
-  contractUrl: "", // 合同URL
-  enterpriseId: undefined, // 企业ID
-  type: 0, // 合同类型
-  rentTime: [], // 租赁时间范围
-});
+  if (!allowImgType) {
+    ElMessage.error("上传合同文件只能是 .doc, .pdf 格式!");
+  }
+  if (!isLt5M) {
+    ElMessage.error("上传合同文件大小不能超过 5MB!");
+  }
+  return allowImgType && isLt5M;
+};
+
+
+const uploadHandle = async (fileData: UploadRequestOptions) => {
+  // 1. 处理FormData
+  const { file } = fileData;
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("type", "contract");
+  // 2. 上传并赋值
+  const res = await uploadAPI(formData);
+  const { id, url } = res.data;
+  rentForm.value.contractId = id;
+  rentForm.value.contractUrl = url;
+  contractList.value.push({ name: file.name, url: url });
+  // 单独校验表单
+  addForm.value.validateField("contractId");
+};
+
+const confirmAdd = ()=>{
+  addForm.value.validate(async (valid: boolean) => {
+    if (valid) {
+      const { buildingId, contractId, contractUrl, enterpriseId, type } = rentForm.value
+      await createRentAPI({
+        buildingId, contractId, contractUrl, enterpriseId, type,
+        startTime: rentForm.value.rentTime[0],
+        endTime: rentForm.value.rentTime[1]
+      })
+      ElMessage.success({message: '添加合同成功'})
+      // 更新列表
+      getExterpriseList()
+      // 关闭弹框
+      rentDialogVisible.value = false
+      // 重置表单
+      addForm.value.resetFields()
+      rentForm.value.contractUrl = ''
+      rentForm.value.contractId = ''
+      contractList.value = []
+    }
+  })
+}
+
+
 
 // 合同表单的验证规则
 const rentRules = ref<FormRules>({
@@ -53,8 +130,7 @@ const rentRules = ref<FormRules>({
   contractId: [{ required: true, message: "请上传合同文件" }], // 合同文件必填
 });
 
-// 企业列表数据
-const exterpriseList = ref<Enterprise[]>([]);
+
 
 // 查询参数
 const params = ref<EnterpriseListParams>({
@@ -118,7 +194,6 @@ const pageChange = (page: number) => {
   params.value.page = page; // 更新当前页码
   getExterpriseList(); // 重新获取企业列表
 };
-
 </script>
 
 <template>
@@ -128,18 +203,20 @@ const pageChange = (page: number) => {
       <!-- 企业名称 -->
       <div class="search-label">企业名称：</div>
       <el-input
-        v-model="params.name" 
-        clearable 
-        placeholder="请输入企业名称" 
-        class="search-main" 
-        @clear="doSearch" 
+        v-model="params.name"
+        clearable
+        placeholder="请输入企业名称"
+        class="search-main"
+        @clear="doSearch"
       />
       <el-button type="primary" @click="doSearch">查询</el-button>
     </div>
 
     <!-- 添加企业按钮 -->
     <div class="create-container">
-      <el-button type="primary" @click="$router.push('/exterpriseAdd')">添加企业</el-button>
+      <el-button type="primary" @click="$router.push('/exterpriseAdd')"
+        >添加企业</el-button
+      >
     </div>
 
     <!-- 表格区域 -->
@@ -148,7 +225,12 @@ const pageChange = (page: number) => {
         <!-- 序号列 -->
         <el-table-column align="center" type="index" label="序号" width="120" />
         <!-- 企业名称列 -->
-        <el-table-column align="center" label="企业名称" width="320" prop="name" />
+        <el-table-column
+          align="center"
+          label="企业名称"
+          width="320"
+          prop="name"
+        />
         <!-- 联系人列 -->
         <el-table-column align="center" label="联系人" prop="contact" />
         <!-- 联系电话列 -->
@@ -156,10 +238,16 @@ const pageChange = (page: number) => {
         <!-- 操作列 -->
         <el-table-column align="center" label="操作" width="350">
           <template #default="{ row: { id } }">
-            <el-button size="small" type="text" @click="addRent()">添加合同</el-button>
+            <el-button size="small" type="text" @click="addRent(id)"
+              >添加合同</el-button
+            >
             <el-button size="small" type="text">查看</el-button>
-            <el-button size="small" type="text" @click="editRent(id)">编辑</el-button>
-            <el-button size="small" type="text" @click="delExterprise(id)">删除</el-button>
+            <el-button size="small" type="text" @click="editRent(id)"
+              >编辑</el-button
+            >
+            <el-button size="small" type="text" @click="delExterprise(id)"
+              >删除</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -210,14 +298,20 @@ const pageChange = (page: number) => {
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
-              value-format="yyyy-MM-dd"
+              value-format="YYYY-MM-DD"
             />
           </el-form-item>
 
-          <!-- 上传合同文件 -->
           <el-form-item label="租赁合同" prop="contractId">
-            <el-upload action="#">
-              <el-button size="small" type="primary" plain>上传合同文件</el-button>
+            <el-upload
+              action="#"
+              :http-request="uploadHandle"
+              :before-upload="beforeUpload"
+              :file-list="contractList"
+            >
+              <el-button size="small" type="primary" plain
+                >上传合同文件</el-button
+              >
               <div slot="tip" class="el-upload__tip">
                 支持扩展名：.doc .pdf, 文件大小不超过5M
               </div>
@@ -229,7 +323,7 @@ const pageChange = (page: number) => {
       <!-- 弹框底部操作按钮 -->
       <template #footer>
         <el-button size="small" @click="closeDialog">取消</el-button>
-        <el-button size="small" type="primary">确定</el-button>
+        <el-button size="small" type="primary" @click="confirmAdd">确 定</el-button>
       </template>
     </el-dialog>
   </div>

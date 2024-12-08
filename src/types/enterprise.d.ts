@@ -200,3 +200,22 @@ export interface Rent {
    */
   status: number;
 }
+
+export interface RentForm {
+  buildingId: string// 楼宇ID
+  contractId: string // 合同ID
+  contractUrl: string // 合同URL
+  enterpriseId: str // 企业ID
+  type: number // 合同类型
+  rentTime: Array<string> // 租赁时间范围
+}
+
+export  interface CreateRentAPIParams {
+  buildingId: string;          // 楼栋ID
+  contractId: string;          // 合同ID
+  contractUrl: string;         // 合同URL
+  enterpriseId: string;        // 企业ID
+  type: number;                // 租赁类型
+  startTime: string | Date;    // 租赁开始时间，可能是字符串或Date对象
+  endTime: string | Date;      // 租赁结束时间，可能是字符串或Date对象
+}

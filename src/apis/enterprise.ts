@@ -1,10 +1,12 @@
 import type {
+  CreateRentAPIParams,
   EnterpriseDetail,
   EnterpriseFile,
   EnterpriseListData,
   EnterpriseListParams,
   EnterpriseParams,
   Industry,
+  Rent,
 } from "@/types/enterprise";
 import { request } from "@/utils/reuqest";
 
@@ -70,3 +72,11 @@ export const delEnterpriseAPI = (id: string) => {
 export const getRentBuildListAPI = () => {
   return request<{ id: string; name: string }[]>("/park/rent/building");
 };
+/**
+ * 给当前企业添加合同
+ * @param {*} data
+ * @returns
+ */
+export const  createRentAPI = (data: CreateRentAPIParams) => {
+  return request('/park/enterprise/rent', 'POST', data)
+}
