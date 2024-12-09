@@ -31,7 +31,7 @@ const handleCommand = (command: string) => {
     <div></div>
     <!-- dropdown -->
     <el-dropdown @command="handleCommand">
-      <div class="user-wrapper">黑马管理员</div>
+      <div class="user-wrapper">{{ store.profile.name }}</div>
       <template #dropdown>
         <el-dropdown-menu>
           <el-dropdown-item command="home">首页</el-dropdown-item>

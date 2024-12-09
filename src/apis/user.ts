@@ -1,4 +1,4 @@
-import type { LoginParams } from "@/types/user";
+import type { LoginParams, Profile } from "@/types/user";
 import { request } from "@/utils/reuqest";
 
 /**
@@ -8,4 +8,12 @@ import { request } from "@/utils/reuqest";
  */
 export const loginAPI = (data: LoginParams) => {
   return request<{ token: string }>("/park/login", "POST", data);
+};
+/**
+ * @description: 获取用户信息
+ * @param {*} data {}
+ * @return {*} promise
+ */
+export const getProfileAPI = () => {
+  return request<Profile>("/park/user/profile");
 };

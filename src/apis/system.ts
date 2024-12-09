@@ -47,5 +47,5 @@ export const updateRoleAPI = (data: RoleParams) => {
  * @returns
  */
 export const delRoleUserAPI = (roleId: string) => {
-    return request(`/park/sys/role/${roleId}`, 'DELETE')
-  }
+  return request(`/park/sys/role/${roleId}`, "DELETE");
+};
