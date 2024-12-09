@@ -9,7 +9,7 @@ import type {
   Industry,
   Rent,
 } from "@/types/enterprise";
-import { request } from "@/utils/reuqest";
+import { request, service } from "@/utils/reuqest";
 
 /**
  * 获取企业列表
@@ -95,6 +95,17 @@ export const getRentListAPI = (id: string) => {
  * @param {string} rentId
  * @returns
  */
-export const outRentAPI = (rentId: string)=> {
-  return request(`/park/enterprise/rent/${rentId}`, 'PUT')
-}
+export const outRentAPI = (rentId: string) => {
+  return request(`/park/enterprise/rent/${rentId}`, "PUT");
+};
+
+/**
+ * 下载合同文件
+ */
+export const downloadContract = (id: string) => {
+  return service<null, Blob>({
+    url: `/download/${id}`,
+    // method: 'POST',
+    responseType: "blob", // axios 会把响应的文件流格式化成 Blob 数据块对象
+  });
+};

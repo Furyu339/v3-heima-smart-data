@@ -2,7 +2,8 @@
 // 导入需要的API方法和类型，以及Element Plus的组件和类型
 import {
   createRentAPI,
-  delEnterpriseAPI, // 删除企业API
+  delEnterpriseAPI,
+  getEnterpriseDetailAPI, // 删除企业API
   getEnterpriseListAPI, // 获取企业列表API
   getRentBuildListAPI,
   getRentListAPI,
@@ -12,6 +13,7 @@ import {
 
 import type {
   Enterprise,
+  EnterpriseDetail,
   EnterpriseListParams,
   RentForm,
 } from "@/types/enterprise"; // 导入类型定义
@@ -254,29 +256,30 @@ const pageChange = (page: number) => {
 };
 
 const outRent = (rentId: string, rowId: string) => {
-  ElMessageBox.confirm('确认退租吗?', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(async () => {
-    // 1. 调用接口
-    await outRentAPI(rentId)
-    // 2. 重新拉取列表
-    await getExterpriseList()
-    expandRowKeys.value = []
-    
-
-    ElMessageBox({
-      type: 'success',
-      message: '退租成功!'
-    })
-  }).catch(() => {
-    ElMessage({
-      type: 'info',
-      message: '已取消删除'
-    })
+  ElMessageBox.confirm("确认退租吗?", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
   })
-}
+    .then(async () => {
+      // 1. 调用接口
+      await outRentAPI(rentId);
+      // 2. 重新拉取列表
+      await getExterpriseList();
+      expandRowKeys.value = [];
+
+      ElMessageBox({
+        type: "success",
+        message: "退租成功!",
+      });
+    })
+    .catch(() => {
+      ElMessage({
+        type: "info",
+        message: "已取消删除",
+      });
+    });
+};
 </script>
 
 <template>
@@ -330,9 +333,19 @@ const outRent = (rentId: string, rowId: string) => {
               </el-table-column>
               <el-table-column align="center" label="操作" width="250">
                 <template #default="scope">
-                  <el-button size="small" type="text" :disabled="scope.row.status === 3"
-                  @click="outRent(scope.row.id, row.id)">退租</el-button>
-                  <el-button size="small" type="text" :disabled="!(scope.row.status === 3)">删除</el-button>
+                  <el-button
+                    size="small"
+                    type="text"
+                    :disabled="scope.row.status === 3"
+                    @click="outRent(scope.row.id, row.id)"
+                    >退租</el-button
+                  >
+                  <el-button
+                    size="small"
+                    type="text"
+                    :disabled="!(scope.row.status === 3)"
+                    >删除</el-button
+                  >
                 </template>
               </el-table-column>
             </el-table>
@@ -357,7 +370,12 @@ const outRent = (rentId: string, rowId: string) => {
             <el-button size="small" type="text" @click="addRent(id)"
               >添加合同</el-button
             >
-            <el-button size="small" type="text">查看</el-button>
+            <el-button
+              size="small"
+              type="text"
+              @click="$router.push(`/exterpriseDetail?id=${id}`)"
+              >查看</el-button
+            >
             <el-button size="small" type="text" @click="editRent(id)"
               >编辑</el-button
             >
