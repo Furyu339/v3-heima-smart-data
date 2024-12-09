@@ -11,14 +11,14 @@ const params = ref<CarListParams>({
 });
 const total = ref(0);
 const dialogVisible = ref(false);
-const loading  = ref(false)
+const loading = ref(false);
 // 获取规则列表
 const getRuleList = async () => {
-  loading.value = true
+  loading.value = true;
   const res = await getRuleListAPI(params.value);
   ruleList.value = res.data.rows;
   total.value = res.data.total;
-  loading.value = false
+  loading.value = false;
 };
 onMounted(() => {
   getRuleList();
