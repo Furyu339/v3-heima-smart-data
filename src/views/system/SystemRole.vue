@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import { getRoleListAPI, getTreeListAPI } from "@/apis/system";
+import {
+  getRoleDetailAPI,
+  getRoleListAPI,
+  getTreeListAPI,
+} from "@/apis/system";
 import type { Role, RoleData } from "@/types/system";
 import { ref } from "vue";
 
@@ -11,11 +15,19 @@ const roleList = ref<Role[]>([]);
 const getRoleList = async () => {
   const res = await getRoleListAPI();
   roleList.value = res.data;
+  // 第一次加载
+  getRoleDetail(roleList.value[0].roleId!);
 };
 // 2. 点击激活交互
 const activeIndex = ref(0);
 const changeRole = (idx: number) => {
   activeIndex.value = idx;
+  // 获取当前角色下的权限点数据列表
+  // 注意角色 id，不是索引
+  const roleId = roleList.value[idx].roleId;
+  if (roleId) {
+    getRoleDetail(roleId);
+  }
 };
 // 3. 获取权限列表
 const treeList = ref<RoleData[]>([]);
@@ -24,18 +36,29 @@ const getTreeList = async () => {
   treeList.value = res.data;
   // 禁用
   // 目标：treeList里面的每一项以及嵌套的子项都添加一个disabled = true
-  addDisabled(treeList.value)
+  addDisabled(treeList.value);
 };
 // 4. 递归处理函数
-const addDisabled = (treeList: RoleData[]) =>{
-  treeList.forEach(item => {
-    item.disabled = true
+const addDisabled = (treeList: RoleData[]) => {
+  treeList.forEach((item) => {
+    item.disabled = true;
     // 递归处理
     if (item.children) {
-      addDisabled(item.children)
+      addDisabled(item.children);
     }
+  });
+};
+// 5. 获取当前角色权限点
+const treeRef = ref()
+const perms = ref<number[]>([]); // 当前角色权限点列表
+// 封装请求方法
+const getRoleDetail = async (roleId: number) => {
+  const res = await getRoleDetailAPI(roleId);
+  perms.value = res.data.perms;
+  treeRef.value.forEach((tree: { setCheckedKeys: (arg0: number) => void; }, index: number) => {
+    tree.setCheckedKeys(perms.value[index])
   })
-}
+};
 </script>
 
 <template>
@@ -65,6 +88,7 @@ const addDisabled = (treeList: RoleData[]) =>{
         <div v-for="item in treeList" :key="item.id" class="tree-item">
           <div class="tree-title">{{ item.title }}</div>
           <el-tree
+            ref="treeRef"
             :data="item.children"
             node-key="id"
             :props="{ label: 'title' }"

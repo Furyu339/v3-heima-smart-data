@@ -27,3 +27,25 @@ export interface RoleData {
   title?: string;
   disabled?: boolean;
 }
+export interface RoleDetail {
+  /**
+   * 已选择的路由信息
+   */
+  perms: number[];
+  /**
+   * 备注
+   */
+  remark: string;
+  /**
+   * 角色id
+   */
+  roleId: string;
+  /**
+   * 角色名称
+   */
+  roleName: string;
+  /**
+   * 当前角色分配人数
+   */
+  userTotal: number;
+}
