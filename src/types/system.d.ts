@@ -71,3 +71,17 @@ export interface RoleUser {
    */
   userName: string;
 }
+export interface RoleParams {
+  /**
+   * 菜单/功能点权限信息
+   */
+  perms: Array<number[]>;
+  /**
+   * 角色描述
+   */
+  remark: string;
+  /**
+   * 角色名称
+   */
+  roleName: string;
+}

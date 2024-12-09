@@ -9,6 +9,7 @@ import type {
   Industry,
   Rent,
 } from "@/types/enterprise";
+import type { RoleParams } from "@/types/system";
 import { request, service } from "@/utils/reuqest";
 
 /**
@@ -108,4 +109,11 @@ export const downloadContract = (id: string) => {
     // method: 'POST',
     responseType: "blob", // axios 会把响应的文件流格式化成 Blob 数据块对象
   });
+};
+
+/**
+ * 添加角色
+ */
+export const createRoleUserAPI = (roleParams: RoleParams) => {
+  return request(`/park/sys/role`, "POST", roleParams);
 };

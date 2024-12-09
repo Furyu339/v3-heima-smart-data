@@ -74,6 +74,12 @@ const getRoleUserList = async (roleId: number) => {
   const res = await getRoleUserAPI(roleId);
   roleUserList.value = res.data.rows;
 };
+const router = useRouter();
+const onCommand = (command: string, roldId: number) => {
+  if (command === "edit") {
+    router.push(`/roleAdd?id=${roldId}`);
+  }
+};
 </script>
 
 <template>
@@ -93,10 +99,22 @@ const getRoleUserList = async (roleId: number) => {
           {{ item.roleName }}
         </div>
         <div class="more">
-          <img src="@/assets/more.svg" class="icon" />
+          <el-dropdown @command="onCommand($event, item.roleId!)">
+            <span class="el-dropdown-link">
+              <img src="@/assets/more.svg" class="icon" />
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="edit">编辑角色</el-dropdown-item>
+                <el-dropdown-item command="del">删除</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </div>
       </div>
-      <el-button class="addBtn" size="small">添加角色</el-button>
+      <el-button class="addBtn" size="small" @click="$router.push('/roleAdd')">
+        添加角色
+      </el-button>
     </div>
     <!-- 右侧权限和成员 -->
     <div class="right-wrapper">

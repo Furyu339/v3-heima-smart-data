@@ -140,6 +140,11 @@ export const routes: RouteRecordRaw[] = [
         component: () => import("@/views/system/SystemEmployee.vue"),
         meta: { title: "员工管理", permission: "sys:user" },
       },
+      {
+        path: "/roleAdd",
+        component: () => import("@/views/system/AddRole.vue"),
+        meta: { hidden: true },
+      },
     ],
   },
   {
