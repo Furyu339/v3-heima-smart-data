@@ -1,4 +1,4 @@
-import type { Role, RoleData, RoleDetail } from "@/types/system";
+import type { Role, RoleData, RoleDetail, RoleUserData } from "@/types/system";
 import { request } from "@/utils/reuqest";
 
 /**
@@ -21,4 +21,11 @@ export const getTreeListAPI = () => {
  */
 export const getRoleDetailAPI = (roleId: number) => {
   return request<RoleDetail>(`/park/sys/role/${roleId}`);
+};
+/**
+ * 获取角色成员列表
+ * @returns
+ */
+export const getRoleUserAPI = (roleId: number) => {
+  return request<RoleUserData>(`/park/sys/roleUser/${roleId}`);
 };

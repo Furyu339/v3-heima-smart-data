@@ -2,21 +2,24 @@
 import {
   getRoleDetailAPI,
   getRoleListAPI,
+  getRoleUserAPI,
   getTreeListAPI,
 } from "@/apis/system";
-import type { Role, RoleData } from "@/types/system";
+import type { Role, RoleData, RoleUser } from "@/types/system";
 import { ref } from "vue";
 
 onMounted(() => {
   getRoleList();
   getTreeList();
 });
+// 1. 获取角色列表
 const roleList = ref<Role[]>([]);
 const getRoleList = async () => {
   const res = await getRoleListAPI();
   roleList.value = res.data;
   // 第一次加载
   getRoleDetail(roleList.value[0].roleId!);
+  getRoleUserList(roleList.value[0].roleId!);
 };
 // 2. 点击激活交互
 const activeIndex = ref(0);
@@ -27,6 +30,7 @@ const changeRole = (idx: number) => {
   const roleId = roleList.value[idx].roleId;
   if (roleId) {
     getRoleDetail(roleId);
+    getRoleUserList(roleId);
   }
 };
 // 3. 获取权限列表
@@ -49,20 +53,32 @@ const addDisabled = (treeList: RoleData[]) => {
   });
 };
 // 5. 获取当前角色权限点
-const treeRef = ref()
+const treeRef = ref();
 const perms = ref<number[]>([]); // 当前角色权限点列表
 // 封装请求方法
 const getRoleDetail = async (roleId: number) => {
   const res = await getRoleDetailAPI(roleId);
   perms.value = res.data.perms;
-  treeRef.value.forEach((tree: { setCheckedKeys: (arg0: number) => void; }, index: number) => {
-    tree.setCheckedKeys(perms.value[index])
-  })
+  treeRef.value.forEach(
+    (tree: { setCheckedKeys: (arg0: number) => void }, index: number) => {
+      tree.setCheckedKeys(perms.value[index]);
+    },
+  );
+};
+// 6. tab切换
+const activeName = ref<"tree" | "member">("tree"); // 默认打开tree
+// 7. 获取当前角色下的成员
+const roleUserList = ref<RoleUser[]>([]);
+// 封装获取当前角色下的成员的方法
+const getRoleUserList = async (roleId: number) => {
+  const res = await getRoleUserAPI(roleId);
+  roleUserList.value = res.data.rows;
 };
 </script>
 
 <template>
   <div class="role-container">
+    <!-- 左侧角色列表 -->
     <div class="left-wrapper">
       <div
         v-for="(item, index) in roleList"
@@ -84,20 +100,33 @@ const getRoleDetail = async (roleId: number) => {
     </div>
     <!-- 右侧权限和成员 -->
     <div class="right-wrapper">
-      <div class="tree-wrapper">
-        <div v-for="item in treeList" :key="item.id" class="tree-item">
-          <div class="tree-title">{{ item.title }}</div>
-          <el-tree
-            ref="treeRef"
-            :data="item.children"
-            node-key="id"
-            :props="{ label: 'title' }"
-            show-checkbox
-            check-strictly
-            :default-expand-all="true"
-          />
-        </div>
-      </div>
+      <el-tabs v-model="activeName">
+        <el-tab-pane label="功能权限" name="tree">
+          <div class="tree-wrapper">
+            <div v-for="item in treeList" :key="item.id" class="tree-item">
+              <div class="tree-title">{{ item.title }}</div>
+              <el-tree
+                ref="treeRef"
+                :data="item.children"
+                node-key="id"
+                :props="{ label: 'title' }"
+                show-checkbox
+                check-strictly
+                :default-expand-all="true"
+              />
+            </div>
+          </div>
+        </el-tab-pane>
+        <el-tab-pane :label="`成员(${roleUserList.length})`" name="member">
+          <div class="user-wrapper">
+            <el-table :data="roleUserList">
+              <el-table-column type="index" width="250" label="序号" />
+              <el-table-column prop="name" label="员工姓名" />
+              <el-table-column prop="userName" label="登录账号" />
+            </el-table>
+          </div>
+        </el-tab-pane>
+      </el-tabs>
     </div>
   </div>
 </template>

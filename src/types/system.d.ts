@@ -49,3 +49,25 @@ export interface RoleDetail {
    */
   userTotal: number;
 }
+export interface RoleUserData {
+  rows: RoleUser[];
+  /**
+   * 当前角色下关联的用户数
+   */
+  total: number;
+}
+
+export interface RoleUser {
+  /**
+   * 主键id
+   */
+  id: number;
+  /**
+   * 员工姓名
+   */
+  name: string;
+  /**
+   * 账号名
+   */
+  userName: string;
+}
