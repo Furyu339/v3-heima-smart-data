@@ -5,6 +5,7 @@ import {
   delEnterpriseAPI, // 删除企业API
   getEnterpriseListAPI, // 获取企业列表API
   getRentBuildListAPI,
+  getRentListAPI,
   uploadAPI, // 获取楼宇列表API
 } from "@/apis/enterprise";
 
@@ -50,7 +51,7 @@ const rentForm = ref<RentForm>({
 });
 
 // 打开添加合同弹框的方法
-const addRent = async (id:string) => {
+const addRent = async (id: string) => {
   rentDialogVisible.value = true; // 显示弹框
   const res = await getRentBuildListAPI(); // 调用API获取楼宇列表
   buildList.value = res.data; // 更新楼宇列表
@@ -81,7 +82,6 @@ const beforeUpload = (file: UploadRawFile) => {
   return allowImgType && isLt5M;
 };
 
-
 const uploadHandle = async (fileData: UploadRequestOptions) => {
   // 1. 处理FormData
   const { file } = fileData;
@@ -98,30 +98,84 @@ const uploadHandle = async (fileData: UploadRequestOptions) => {
   addForm.value.validateField("contractId");
 };
 
-const confirmAdd = ()=>{
+const confirmAdd = () => {
   addForm.value.validate(async (valid: boolean) => {
     if (valid) {
-      const { buildingId, contractId, contractUrl, enterpriseId, type } = rentForm.value
+      const { buildingId, contractId, contractUrl, enterpriseId, type } =
+        rentForm.value;
       await createRentAPI({
-        buildingId, contractId, contractUrl, enterpriseId, type,
+        buildingId,
+        contractId,
+        contractUrl,
+        enterpriseId,
+        type,
         startTime: rentForm.value.rentTime[0],
-        endTime: rentForm.value.rentTime[1]
-      })
-      ElMessage.success({message: '添加合同成功'})
+        endTime: rentForm.value.rentTime[1],
+      });
+      ElMessage.success({ message: "添加合同成功" });
       // 更新列表
-      getExterpriseList()
+      getExterpriseList();
       // 关闭弹框
-      rentDialogVisible.value = false
+      rentDialogVisible.value = false;
       // 重置表单
-      addForm.value.resetFields()
-      rentForm.value.contractUrl = ''
-      rentForm.value.contractId = ''
-      contractList.value = []
+      addForm.value.resetFields();
+      rentForm.value.contractUrl = "";
+      rentForm.value.contractId = "";
+      contractList.value = [];
     }
-  })
-}
+  });
+};
 
+const expandRowKeys = ref<string[]>([]);
+const rentListloading = ref(false);
+const expandHandle = async (row: any, rows: any[]) => {
+  // // rows 中包含当前展开行数据，说明是展开状态
+  const isExpend = rows.find((item) => item.id === row.id);
+  // 因为展开/关闭都会触发此事件函数，做个判断只有展开时获取数据
+  if (isExpend) {
+    rentListloading.value = true;
+    const res = await getRentListAPI(row.id);
+    res.data.forEach((obj) => {
+      row.rentList.push(obj);
+    });
+    rentListloading.value = false;
+    expandRowKeys.value.push(row.id); // 把当前行的 ID 加入到 expandRowKeys 数组中
+  } else {
+    // 关闭时，把当前行的合同列表清空，防止下次打开时不断 push 叠加
+    row.rentList.splice(0);
+    expandRowKeys.value = expandRowKeys.value.filter(
+      (value) => value !== row.id,
+    );
+  }
+};
 
+// 格式化 tag 类型
+const formatInfoType = (status: number) => {
+  switch (status) {
+    case 0:
+      return "warning";
+    case 1:
+      return "success";
+    case 2:
+      return "info";
+    case 3:
+      return "danger";
+  }
+};
+
+// 格式化 status
+const formatStatus = (type: number) => {
+  switch (type) {
+    case 0:
+      return "待生效";
+    case 1:
+      return "生效中";
+    case 2:
+      return "已到期";
+    case 3:
+      return "已退租";
+  }
+};
 
 // 合同表单的验证规则
 const rentRules = ref<FormRules>({
@@ -129,8 +183,6 @@ const rentRules = ref<FormRules>({
   rentTime: [{ required: true, message: "请选择租赁日期", trigger: "change" }], // 租赁时间必填
   contractId: [{ required: true, message: "请上传合同文件" }], // 合同文件必填
 });
-
-
 
 // 查询参数
 const params = ref<EnterpriseListParams>({
@@ -184,7 +236,12 @@ const doSearch = () => {
 const getExterpriseList = async () => {
   loading.value = true; // 显示加载状态
   const res = await getEnterpriseListAPI(params.value); // 调用API获取企业列表
-  exterpriseList.value = res.data?.rows; // 更新企业列表数据
+  exterpriseList.value = res.data?.rows.map((item) => {
+    return {
+      ...item,
+      rentList: [],
+    };
+  }); // 更新企业列表数据
   total.value = res.data?.total; // 更新总数
   loading.value = false; // 隐藏加载状态
 };
@@ -221,7 +278,40 @@ const pageChange = (page: number) => {
 
     <!-- 表格区域 -->
     <div class="table" v-loading="loading">
-      <el-table style="width: 100%" :data="exterpriseList">
+      <el-table
+        style="width: 100%"
+        :data="exterpriseList"
+        @expand-change="expandHandle"
+        row-key="id"
+        :expand-row-keys="expandRowKeys"
+      >
+        <!-- 新增：展开部分 -->
+        <el-table-column type="expand">
+          <template #default="{ row }">
+            <el-table :data="row.rentList" v-loading="rentListloading">
+              <el-table-column
+                label="租赁楼宇"
+                width="320"
+                prop="buildingName"
+              />
+              <el-table-column label="租赁起始时间" prop="startTime" />
+              <el-table-column align="center" label="合同状态">
+                <template #default="scope">
+                  <el-tag :type="formatInfoType(scope.row.status)">
+                    {{ formatStatus(scope.row.status) }}
+                  </el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column align="center" label="操作" width="250">
+                <template>
+                  <el-button size="small" type="text">续租</el-button>
+                  <el-button size="small" type="text">退租</el-button>
+                  <el-button size="small" type="text">删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </template>
+        </el-table-column>
         <!-- 序号列 -->
         <el-table-column align="center" type="index" label="序号" width="120" />
         <!-- 企业名称列 -->
@@ -323,7 +413,9 @@ const pageChange = (page: number) => {
       <!-- 弹框底部操作按钮 -->
       <template #footer>
         <el-button size="small" @click="closeDialog">取消</el-button>
-        <el-button size="small" type="primary" @click="confirmAdd">确 定</el-button>
+        <el-button size="small" type="primary" @click="confirmAdd"
+          >确 定</el-button
+        >
       </template>
     </el-dialog>
   </div>

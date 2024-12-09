@@ -202,20 +202,51 @@ export interface Rent {
 }
 
 export interface RentForm {
-  buildingId: string// 楼宇ID
-  contractId: string // 合同ID
-  contractUrl: string // 合同URL
-  enterpriseId: str // 企业ID
-  type: number // 合同类型
-  rentTime: Array<string> // 租赁时间范围
+  buildingId: string; // 楼宇ID
+  contractId: string; // 合同ID
+  contractUrl: string; // 合同URL
+  enterpriseId: str; // 企业ID
+  type: number; // 合同类型
+  rentTime: Array<string>; // 租赁时间范围
 }
 
-export  interface CreateRentAPIParams {
-  buildingId: string;          // 楼栋ID
-  contractId: string;          // 合同ID
-  contractUrl: string;         // 合同URL
-  enterpriseId: string;        // 企业ID
-  type: number;                // 租赁类型
-  startTime: string | Date;    // 租赁开始时间，可能是字符串或Date对象
-  endTime: string | Date;      // 租赁结束时间，可能是字符串或Date对象
+export interface CreateRentAPIParams {
+  buildingId: string; // 楼栋ID
+  contractId: string; // 合同ID
+  contractUrl: string; // 合同URL
+  enterpriseId: string; // 企业ID
+  type: number; // 租赁类型
+  startTime: string | Date; // 租赁开始时间，可能是字符串或Date对象
+  endTime: string | Date; // 租赁结束时间，可能是字符串或Date对象
+}
+export interface Datum {
+  /**
+   * 租赁结束时间
+   */
+  endTime: string;
+  /**
+   * 是否可以退租
+   */
+  exitFlag: number;
+  /**
+   * 租赁主键
+   */
+  id: string;
+  /**
+   * 楼宇名称
+   */
+  name: string;
+  /**
+   * 是否可以续租
+   */
+  renewFlag: number;
+  /**
+   * 租赁开始时间
+   */
+  startTime: string;
+  /**
+   * 合同的租赁状态0待生效1生效中2已到期3已退租
+   * 生效中，只能续签一次，续签后，续签的合同退租后，才可以退租
+   */
+  status: number;
 }

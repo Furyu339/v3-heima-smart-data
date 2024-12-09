@@ -1,5 +1,6 @@
 import type {
   CreateRentAPIParams,
+  Datum,
   EnterpriseDetail,
   EnterpriseFile,
   EnterpriseListData,
@@ -77,6 +78,15 @@ export const getRentBuildListAPI = () => {
  * @param {*} data
  * @returns
  */
-export const  createRentAPI = (data: CreateRentAPIParams) => {
-  return request('/park/enterprise/rent', 'POST', data)
-}
+export const createRentAPI = (data: CreateRentAPIParams) => {
+  return request("/park/enterprise/rent", "POST", data);
+};
+
+/**
+ * 获取企业下合同列表
+ * @param {*} id
+ * @returns
+ */
+export const getRentListAPI = (id: string) => {
+  return request<Datum[]>(`/park/enterprise/rent/${id}`);
+};
