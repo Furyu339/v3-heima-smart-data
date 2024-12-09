@@ -2,8 +2,9 @@
 import type { RouteRecordRaw } from "vue-router";
 import { getProfileAPI } from "./apis/user";
 import router, { asyncRoutes } from "./router";
-import { useMenuStore, useUserStore } from "./stores/user";
 import { getLocalToken } from "./utils/auth";
+import { useUserStore } from "./stores/user";
+import { useMenuStore } from "./stores/menu";
 
 /**
  * 处理一级路由数据

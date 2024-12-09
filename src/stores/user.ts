@@ -22,11 +22,3 @@ export const useUserStore = defineStore("hm-user", () => {
   };
   return { token, setToken, clearUserInfo, profile, setProfile };
 });
-
-export const useMenuStore = defineStore("hm-menu", () => {
-  const menuList = ref<RouteRecordRaw[]>([...routes]);
-  const setMenuList = (filterRoutes: RouteRecordRaw[]) => {
-    menuList.value = [...menuList.value, ...filterRoutes];
-  };
-  return { menuList, setMenuList };
-});

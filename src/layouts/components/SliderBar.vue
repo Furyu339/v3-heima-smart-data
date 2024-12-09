@@ -2,10 +2,10 @@
 import { computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import SliderBarItem from "./SliderBarItem.vue";
-import { useMenuStore } from "@/stores/user";
+import { useMenuStore } from "@/stores/menu";
 
 const route = useRoute();
-const store = useMenuStore()
+const store = useMenuStore();
 const defaultActive = computed(() => {
   return route.meta.activePath ? route.meta.activePath : route.path;
 });
@@ -13,7 +13,7 @@ const defaultActive = computed(() => {
 const router = useRouter();
 const routes = computed(() => {
   // return router.options.routes;
-  return store.menuList
+  return store.menuList;
 });
 </script>
 

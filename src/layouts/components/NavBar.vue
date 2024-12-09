@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { useMenuStore } from "@/stores/menu";
 import { useUserStore } from "@/stores/user";
+import type { Profile } from "@/types/user";
 import { ElMessageBox } from "element-plus";
 import { useRouter } from "vue-router";
 
@@ -15,6 +17,10 @@ const handleCommand = (command: string) => {
       .then(() => {
         // 用户点击确定，执行退出登录逻辑
         store.clearUserInfo();
+        store.profile = {} as Profile;
+        // 清除路由
+        const menuStore = useMenuStore();
+        menuStore.resetMenu();
         router.replace("/login");
       })
       .catch(() => {
