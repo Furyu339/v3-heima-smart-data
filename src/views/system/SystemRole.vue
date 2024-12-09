@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import {
+delRoleUserAPI,
   getRoleDetailAPI,
   getRoleListAPI,
   getRoleUserAPI,
   getTreeListAPI,
 } from "@/apis/system";
 import type { Role, RoleData, RoleUser } from "@/types/system";
+import { ElMessageBox, ElMessage } from "element-plus";
 import { ref } from "vue";
 
 onMounted(() => {
@@ -75,11 +77,25 @@ const getRoleUserList = async (roleId: number) => {
   roleUserList.value = res.data.rows;
 };
 const router = useRouter();
-const onCommand = (command: string, roldId: number) => {
-  if (command === "edit") {
-    router.push(`/roleAdd?id=${roldId}`);
+const onCommand = (command: string, roldId: number)=>{
+  if (command === 'edit'){
+    router.push(`/roleAdd?id=${roldId}`)
+  } 
+  if (command === 'del'){
+    ElMessageBox.confirm('是否确认删除当前角色?', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(async () => {
+      await delRoleUserAPI(roldId + '')
+      await getRoleList()
+      ElMessage({
+        type: 'success',
+        message: '删除成功!'
+      })
+    })
   }
-};
+}
 </script>
 
 <template>
