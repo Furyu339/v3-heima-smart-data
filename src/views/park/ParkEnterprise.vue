@@ -6,6 +6,7 @@ import {
   getEnterpriseListAPI, // 获取企业列表API
   getRentBuildListAPI,
   getRentListAPI,
+  outRentAPI,
   uploadAPI, // 获取楼宇列表API
 } from "@/apis/enterprise";
 
@@ -251,6 +252,31 @@ const pageChange = (page: number) => {
   params.value.page = page; // 更新当前页码
   getExterpriseList(); // 重新获取企业列表
 };
+
+const outRent = (rentId: string, rowId: string) => {
+  ElMessageBox.confirm('确认退租吗?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(async () => {
+    // 1. 调用接口
+    await outRentAPI(rentId)
+    // 2. 重新拉取列表
+    await getExterpriseList()
+    expandRowKeys.value = []
+    
+
+    ElMessageBox({
+      type: 'success',
+      message: '退租成功!'
+    })
+  }).catch(() => {
+    ElMessage({
+      type: 'info',
+      message: '已取消删除'
+    })
+  })
+}
 </script>
 
 <template>
@@ -303,10 +329,10 @@ const pageChange = (page: number) => {
                 </template>
               </el-table-column>
               <el-table-column align="center" label="操作" width="250">
-                <template>
-                  <el-button size="small" type="text">续租</el-button>
-                  <el-button size="small" type="text">退租</el-button>
-                  <el-button size="small" type="text">删除</el-button>
+                <template #default="scope">
+                  <el-button size="small" type="text" :disabled="scope.row.status === 3"
+                  @click="outRent(scope.row.id, row.id)">退租</el-button>
+                  <el-button size="small" type="text" :disabled="!(scope.row.status === 3)">删除</el-button>
                 </template>
               </el-table-column>
             </el-table>

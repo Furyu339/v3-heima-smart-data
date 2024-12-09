@@ -75,7 +75,7 @@ export const getRentBuildListAPI = () => {
 };
 /**
  * 给当前企业添加合同
- * @param {*} data
+ * @param {CreateRentAPIParams} data
  * @returns
  */
 export const createRentAPI = (data: CreateRentAPIParams) => {
@@ -84,9 +84,17 @@ export const createRentAPI = (data: CreateRentAPIParams) => {
 
 /**
  * 获取企业下合同列表
- * @param {*} id
+ * @param {string} id
  * @returns
  */
 export const getRentListAPI = (id: string) => {
   return request<Datum[]>(`/park/enterprise/rent/${id}`);
 };
+/**
+ * 退租
+ * @param {string} rentId
+ * @returns
+ */
+export const outRentAPI = (rentId: string)=> {
+  return request(`/park/enterprise/rent/${rentId}`, 'PUT')
+}
