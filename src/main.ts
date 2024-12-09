@@ -9,8 +9,9 @@ import { createPinia } from "pinia";
 import router from "./router";
 import "./permission";
 import { zhCn } from "element-plus/es/locales.mjs";
+import { auth } from "./directive";
 const app = createApp(App);
-
+app.directive('auth-btn', auth)
 app.use(ElementPlus, {
   locale: zhCn,
 });
